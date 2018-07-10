@@ -1,0 +1,405 @@
+//
+//  Authentication.swift
+//  qbiq
+//
+//  Created by Kyle Jessup on 2017-11-10.
+//  Copyright © 2017 Treefrog Inc. All rights reserved.
+//
+
+import Foundation
+import OAuthSwift
+import SwiftCodables
+import SAuthCodables
+
+#if false//DEBUG // this
+	#if TARGET_IPHONE_SIMULATOR
+let authServerBaseURL = "http://localhost:8181"
+	#else
+let authServerBaseURL = "http://192.168.0.26:8181"
+	#endif
+#else
+let authServerBaseURL = "https://auth.ubiqweus.com"
+#endif
+
+let sessionIdKey = "sessionid"
+
+enum AuthAPIEndpoint: String {
+	case register = "/api/v1/register"
+	case login = "/api/v1/login"
+	case passReset = "/api/v1/passreset"
+	case me = "/api/v1/a/me"
+	case changePassword = "/api/v1/a/changepassword"
+	case myData = "/api/v1/a/mydata"
+	
+	case oauthGoogleReturn = "/api/v1/oauth/return/google"
+	case oauthFacebookReturn = "/api/v1/oauth/return/facebook"
+	case oauthLinkedInReturn = "/api/v1/oauth/return/linkedin"
+	case oauthUpgrade = "/api/v1/oauth/upgrade/"
+	
+	case addDeviceId = "/api/v1/a/mobile/add"
+	
+	var url: URL {
+		return URL(string: authServerBaseURL + rawValue)!
+	}
+}
+
+public typealias AuthenticatedUser = Account
+public extension Account {
+	var userId: String { return id.uuidString }
+}
+
+struct AuthServerResponse: Decodable {
+	let error: String?
+	let msg: String?
+}
+
+struct RequestParameters<Body: Encodable> {
+	typealias NameValuePair = (name: String, value: String)
+	let body: Body
+	let paths: [String]
+	
+	init(body b: Body, paths p: [String] = []) {
+		body = b
+		paths = p
+	}
+	
+	var formURLEncoded: String {
+		let encoder = ParameterEncoder()
+		do {
+			try body.encode(to: encoder)
+			return encoder.formURLEncoded
+		} catch {
+			return ""
+		}
+	}
+	
+	var jsonEncoded: String {
+		guard let data = try? JSONEncoder().encode(body),
+				let s = String(data: data, encoding: .utf8) else {
+			return "{}"
+		}
+		return s
+	}
+	
+	func complete(url: URL) -> URL {
+		guard !paths.isEmpty else {
+			return url
+		}
+		return URL(string:
+			url.absoluteString + "/" + paths.compactMap {
+				$0.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) }.joined(separator: "/"))!
+	}
+}
+
+public class Authentication {
+	public private(set) static var shared: Authentication?
+	public static var deviceId: String?
+	
+	public struct Error: Swift.Error, CustomStringConvertible {
+		public let description: String
+		init(_ message: String)  {
+			description = message
+		}
+	}
+	
+	public var token: TokenAcquiredResponse? {
+		didSet {
+			if let s = token {
+				UserDefaults.standard.set(s.token, forKey: sessionIdKey)
+				user = s.account
+			#if DEBUG
+				print("token: \(token?.token ?? "none")")
+			#endif
+			} else {
+				UserDefaults.standard.removeObject(forKey: sessionIdKey)
+				user = nil
+			}
+			UserDefaults.standard.synchronize()
+		}
+	}
+	public var user: AuthenticatedUser? {
+		didSet {
+			if let deviceId = Authentication.deviceId {
+				DispatchQueue.global().async {
+					self.addDeviceId(deviceId) {
+						try? $0.get()
+					}
+				}
+			}
+		}
+	}
+	var oauth: OAuth2Swift?
+	
+	public init() {
+		if let sessionId = UserDefaults.standard.string(forKey: sessionIdKey) {
+			token = TokenAcquiredResponse(token: sessionId, account: nil)
+		} else {
+			token = nil
+		}
+		Authentication.shared = self
+	}
+	
+	func settingsFor(service: String) -> [String:String] {
+		if let path = Bundle.main.path(forResource: "Services", ofType: "plist"),
+			let d = NSDictionary(contentsOfFile: path) as? [String:Any],
+			let ret = d[service] as? [String:String] {
+			return ret
+		}
+		return [:]
+	}
+	
+	public func checkLoggedIn(callback: @escaping (APIResponse<Bool>) -> ()) {
+		if let _ = user {
+			return callback(APIResponse {return true})
+		}
+		// if no session then we are not logged in
+		if nil == token {
+			return callback(APIResponse {return false})
+		}
+		// check with the server
+		getMe() {
+			result in
+			do {
+				self.user = try result.get()
+				callback(APIResponse {return true})
+			} catch {
+				callback(APIResponse {return false})
+			}
+		}
+	}
+	
+	public func getMe(callback: @escaping (APIResponse<AuthenticatedUser>) -> ()) {
+		sendRequest(endpoint: .me, sessionInfo: self.token) {
+			result in
+			do {
+				let d = try JSONDecoder().decode(AuthenticatedUser.self, from: try result.get())
+				callback(APIResponse {return d})
+			} catch {
+				
+				callback(APIResponse {
+					self.token = nil
+					throw error
+				})
+			}
+		}
+	}
+	
+	public func logout(callback: @escaping (APIResponse<Void>) -> ()) {
+		guard let _ = token else {
+			return callback(APIResponse {return})
+		}
+		callback(APIResponse {
+			self.token = nil
+			self.user = nil
+		})
+	}
+	
+	public func login(email: String, password: String, callback: @escaping (APIResponse<Void>) -> ()) {
+		let params = RequestParameters(body: ["email":email, "password":password])
+		sendRequest(endpoint: .login, sessionInfo: self.token, post: false, parameters: params) {
+			result in
+			do {
+				let response = try JSONDecoder().decode(TokenAcquiredResponse.self, from: try result.get())
+				self.token = response
+				callback(APIResponse {return})
+			} catch {
+				callback(APIResponse {throw error})
+			}
+		}
+	}
+	
+	public func completeRecoverPassword(address: String, password: String, token: String, callback: @escaping (APIResponse<Void>) -> ()) {
+		let req = AuthAPI.PasswordResetCompleteRequest(address: address, password: password, authToken: token)
+		let params = RequestParameters(body: req)
+		sendRequest(endpoint: .passReset, post: true, parameters: params) {
+			result in
+			do {
+				let response = try JSONDecoder().decode(TokenAcquiredResponse.self, from: try result.get())
+				self.token = response
+				callback(APIResponse {return})
+			} catch {
+				callback(APIResponse {throw error})
+			}
+		}
+	}
+	
+	public func startRecoverPassword(address: String, callback: @escaping (APIResponse<Void>) -> ()) {
+		let req = AuthAPI.PasswordResetRequest(address: address, deviceId: Authentication.deviceId)
+		let params = RequestParameters(body: req)
+		sendRequest(endpoint: .passReset, parameters: params) {
+			result in
+			do {
+				_ = try result.get()
+				callback(APIResponse {return})
+			} catch {
+				callback(APIResponse {throw error})
+			}
+		}
+	}
+	
+	public func getMeta(callback: @escaping (APIResponse<AccountPublicMeta>) -> ()) {
+		sendRequest(endpoint: .myData, sessionInfo: self.token) {
+			result in
+			do {
+				let d = try JSONDecoder().decode(AccountPublicMeta.self, from: try result.get())
+				callback(APIResponse {return d})
+			} catch {
+				callback(APIResponse {throw error})
+			}
+		}
+	}
+	
+	public func putMeta(data: AccountPublicMeta, callback: @escaping (APIResponse<Void>) -> ()) {
+		let params = RequestParameters(body: data)
+		sendRequest(endpoint: .myData, sessionInfo: self.token, post: true, parameters: params) {
+			result in
+			do {
+				let _ = try JSONSerialization.jsonObject(with: try result.get(), options: [])
+				callback(APIResponse {return})
+			} catch {
+				callback(APIResponse {throw error})
+			}
+		}
+	}
+	
+	public func register(email: String, password: String, fullName: String, callback: @escaping (APIResponse<Void>) -> ()) {
+		let params = RequestParameters(body: ["email":email, "password":password, "fullName":fullName])
+		sendRequest(endpoint: .register, sessionInfo: self.token, post: true, parameters: params) {
+			result in
+			do {
+				_ = try JSONDecoder().decode(AliasBrief.self, from: try result.get())
+				callback(APIResponse {return})
+			} catch {
+				callback(APIResponse {throw error})
+			}
+		}
+	}
+	
+	public func addDeviceId(_ id: String, callback: @escaping (APIResponse<Void>) -> ()) {
+		print("Device Id \(id)")
+		let request = AuthAPI.AddMobileDeviceRequest(deviceId: id, deviceType: "ios")
+		let params = RequestParameters(body: request)
+		sendRequest(endpoint: .addDeviceId, sessionInfo: token, post: true, parameters: params) {
+			result in
+			do {
+				_ = try result.get()
+				callback(APIResponse {return})
+			} catch {
+				callback(APIResponse {throw error})
+			}
+		}
+	}
+	
+	fileprivate func sendRequest<T>(endpoint: AuthAPIEndpoint,
+								 sessionInfo: TokenAcquiredResponse? = nil,
+								 post: Bool = false,
+								 parameters: RequestParameters<T>,
+								 callback: @escaping (APIResponse<Data>) -> ()) {
+		let url = parameters.complete(url: endpoint.url)
+		APIRequest.sendRequest(endpointURL: url, sessionInfo: sessionInfo, post: post, parameters: parameters, callback: callback)
+	}
+	
+	fileprivate func sendRequest(endpoint: AuthAPIEndpoint,
+								 sessionInfo: TokenAcquiredResponse? = nil,
+								 post: Bool = false,
+								 callback: @escaping (APIResponse<Data>) -> ()) {
+		sendRequest(endpoint: endpoint, sessionInfo: sessionInfo, post: post, parameters: RequestParameters(body: [String:String]()), callback: callback)
+	}
+}
+
+public extension Authentication {
+	typealias OAuthURLHandlerMaker = (OAuth2Swift) -> OAuthSwiftURLHandlerType
+	
+	private func oauthSuccess(provider: String, _ credential: OAuthSwiftCredential, _ response: OAuthSwiftResponse?, _ parameters: OAuthSwift.Parameters, _ callback: @escaping (APIResponse<Void>) -> ()) {
+		let token = credential.oauthToken
+		upgradeUser(provider: provider, token: token) {
+			result in
+			DispatchQueue.main.async {
+				callback(APIResponse {
+					try result.get()
+				})
+			}
+		}
+	}
+	
+	func loginOAuthGoogle(handlerMaker: OAuthURLHandlerMaker, callback: @escaping (APIResponse<Void>) -> ()) {
+		let params = settingsFor(service: "Google")
+		guard let oauth = OAuth2Swift(parameters: params) else {
+			return callback(APIResponse { throw Authentication.Error("Unable to get parameters for OAuth service \"Google\".") })
+		}
+		self.oauth = oauth
+		oauth.authorizeURLHandler = handlerMaker(oauth) // OAuthSwiftOpenURLExternally.sharedInstance
+		oauth.authorize(withCallbackURL: AuthAPIEndpoint.oauthGoogleReturn.url,
+						scope: "https://www.googleapis.com/auth/plus.profile.emails.read",
+						state: generateState(withLength: 20),
+						success: {
+							(a, b, c) in
+							return self.oauthSuccess(provider: "google", a, b, c, callback)
+						},
+						failure: {
+							error in
+							self.oauth = nil
+							callback(APIResponse {throw error})
+						}
+		)
+	}
+	
+	func loginOAuthFacebook(handlerMaker: OAuthURLHandlerMaker, callback: @escaping (APIResponse<Void>) -> ()) {
+		let params = settingsFor(service: "Facebook")
+		guard let oauth = OAuth2Swift(parameters: params) else {
+			return callback(APIResponse { throw Authentication.Error("Unable to get parameters for OAuth service \"Facebook\".") })
+		}
+		self.oauth = oauth
+		oauth.authorizeURLHandler = handlerMaker(oauth)
+		oauth.authorize(withCallbackURL: AuthAPIEndpoint.oauthFacebookReturn.url,
+						scope: "email",
+						state: generateState(withLength: 20),
+						success: {
+							(a, b, c) in
+							return self.oauthSuccess(provider: "facebook", a, b, c, callback)
+		},
+						failure: {
+							error in
+							self.oauth = nil
+							callback(APIResponse {throw error})
+		}
+		)
+	}
+	
+	func loginOAuthLinkedin(handlerMaker: OAuthURLHandlerMaker, callback: @escaping (APIResponse<Void>) -> ()) {
+		let params = settingsFor(service: "Linkedin")
+		guard let oauth = OAuth2Swift(parameters: params) else {
+			return callback(APIResponse { throw Authentication.Error("Unable to get parameters for OAuth service \"Linkedin\".") })
+		}
+		self.oauth = oauth
+		oauth.authorizeURLHandler = handlerMaker(oauth)
+		oauth.authorize(withCallbackURL: AuthAPIEndpoint.oauthLinkedInReturn.url,
+						scope: "r_basicprofile,r_emailaddress",
+						state: generateState(withLength: 20),
+						success: {
+							(a, b, c) in
+							return self.oauthSuccess(provider: "linkedin", a, b, c, callback)
+		},
+						failure: {
+							error in
+							self.oauth = nil
+							callback(APIResponse {throw error})
+		}
+		)
+	}
+	
+	private func upgradeUser(provider: String, token: String, callback: @escaping (APIResponse<Void>) -> ()) {
+		let params = RequestParameters(body: EmptyReply(), paths: [provider, token])
+		self.sendRequest(endpoint: .oauthUpgrade, sessionInfo: self.token, parameters: params) {
+			result in
+			do {
+				let response = try JSONDecoder().decode(TokenAcquiredResponse.self, from: try result.get())
+				self.token = response
+				callback(APIResponse {return})
+			} catch {
+				callback(APIResponse {throw error})
+			}
+		}
+	}
+}
+
