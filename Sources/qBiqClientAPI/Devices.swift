@@ -10,7 +10,7 @@ import Foundation
 import SwiftCodables
 import SAuthCodables
 
-#if DEBUG // this
+#if false//DEBUG // this
 	#if TARGET_IPHONE_SIMULATOR
 let apiServerBaseURL = "http://localhost:8080"
 	#else
