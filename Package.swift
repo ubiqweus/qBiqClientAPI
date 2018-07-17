@@ -12,7 +12,7 @@ let package = Package(
             targets: ["qBiqClientAPI"]),
     ],
     dependencies: [
-		.package(url: "https://github.com/kjessup/BiqSwiftCodables.git", .branch("master")),
+		.package(url: "https://github.com/ubiqweus/qBiqSwiftCodables.git", .branch("master")),
 		.package(url: "https://github.com/kjessup/SAuthCodables.git", .branch("master")),
 		.package(url: "https://github.com/OAuthSwift/OAuthSwift.git", .exact("1.1.0")),
 		
