@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>GroupAPI Extension Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Extension/GroupAPI" class="dashAnchor"></a>
+    <a title="GroupAPI Extension Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/ubiqweus/qBiqClientAPI"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        GroupAPI Extension Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Authentication.html">Authentication</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Authentication/Error.html">– Error</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Account.html">Account</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/DeviceAPI.html">DeviceAPI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/GroupAPI.html">GroupAPI</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/APIRequest.html">APIRequest</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/APIRequest/Error.html">– Error</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/APIResponse.html">APIResponse</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>GroupAPI</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">GroupAPI</span></code></pre>
+
+                </div>
+              </div>
+            <p>Device group related API calls.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables8GroupAPIO010qBiqClientD0E10listGroups4user8callbacky05SAuthB07AccountV_yAD11APIResponseVySayAA0e6DeviceC0VGGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/listGroups(user:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables8GroupAPIO010qBiqClientD0E10listGroups4user8callbacky05SAuthB07AccountV_yAD11APIResponseVySayAA0e6DeviceC0VGGctFZ">listGroups(user:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>List the groups belonging to the user.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">listGroups</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="p">[</span><span class="kt">BiqDeviceGroup</span><span class="p">]</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables8GroupAPIO010qBiqClientD0E11listDevices4user7groupId8callbacky05SAuthB07AccountV_10Foundation4UUIDVyAD11APIResponseVySayAA0E6DeviceVGGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/listDevices(user:groupId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables8GroupAPIO010qBiqClientD0E11listDevices4user7groupId8callbacky05SAuthB07AccountV_10Foundation4UUIDVyAD11APIResponseVySayAA0E6DeviceVGGctFZ">listDevices(user:groupId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>List the devices in the indicated group.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">listDevices</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">groupId</span><span class="p">:</span> <span class="kt">Id</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="p">[</span><span class="kt">BiqDevice</span><span class="p">]</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables8GroupAPIO010qBiqClientD0E06createC04user9groupName8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAA0e6DeviceC0VGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/createGroup(user:groupName:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables8GroupAPIO010qBiqClientD0E06createC04user9groupName8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAA0e6DeviceC0VGctFZ">createGroup(user:groupName:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Create a group with the given name.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">createGroup</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">groupName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">BiqDeviceGroup</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables8GroupAPIO010qBiqClientD0E06renameC04user7groupId7newName8callbacky05SAuthB07AccountV_10Foundation4UUIDVSSyAD11APIResponseVyAJ10EmptyReplyVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/renameGroup(user:groupId:newName:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables8GroupAPIO010qBiqClientD0E06renameC04user7groupId7newName8callbacky05SAuthB07AccountV_10Foundation4UUIDVSSyAD11APIResponseVyAJ10EmptyReplyVGctFZ">renameGroup(user:groupId:newName:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Rename the indicated group.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">renameGroup</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">groupId</span><span class="p">:</span> <span class="kt">Id</span><span class="p">,</span> <span class="nv">newName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">EmptyReply</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables8GroupAPIO010qBiqClientD0E06deleteC04user7groupId8callbacky05SAuthB07AccountV_10Foundation4UUIDVyAD11APIResponseVyAI10EmptyReplyVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/deleteGroup(user:groupId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables8GroupAPIO010qBiqClientD0E06deleteC04user7groupId8callbacky05SAuthB07AccountV_10Foundation4UUIDVyAD11APIResponseVyAI10EmptyReplyVGctFZ">deleteGroup(user:groupId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Delete the indicated group.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">deleteGroup</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">groupId</span><span class="p">:</span> <span class="kt">Id</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">EmptyReply</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables8GroupAPIO010qBiqClientD0E03addC6Device4user7groupId06deviceK08callbacky05SAuthB07AccountV_10Foundation4UUIDVSSyAD11APIResponseVyAJ10EmptyReplyVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/addGroupDevice(user:groupId:deviceId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables8GroupAPIO010qBiqClientD0E03addC6Device4user7groupId06deviceK08callbacky05SAuthB07AccountV_10Foundation4UUIDVSSyAD11APIResponseVyAJ10EmptyReplyVGctFZ">addGroupDevice(user:groupId:deviceId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Add the device to the indicated group.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">addGroupDevice</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">groupId</span><span class="p">:</span> <span class="kt">Id</span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">EmptyReply</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables8GroupAPIO010qBiqClientD0E06removeC6Device4user7groupId06deviceK08callbacky05SAuthB07AccountV_10Foundation4UUIDVSSyAD11APIResponseVyAJ10EmptyReplyVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/removeGroupDevice(user:groupId:deviceId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables8GroupAPIO010qBiqClientD0E06removeC6Device4user7groupId06deviceK08callbacky05SAuthB07AccountV_10Foundation4UUIDVSSyAD11APIResponseVyAJ10EmptyReplyVGctFZ">removeGroupDevice(user:groupId:deviceId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Remove the indicated device from the group.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">removeGroupDevice</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">groupId</span><span class="p">:</span> <span class="kt">Id</span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">EmptyReply</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Ubiqweus</a>. All rights reserved. (Last updated: 2018-07-18)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

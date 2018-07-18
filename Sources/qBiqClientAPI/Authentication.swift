@@ -43,8 +43,11 @@ enum AuthAPIEndpoint: String {
 	}
 }
 
+/// An authenticated SAuth user account.
 public typealias AuthenticatedUser = Account
+/// Extensions on Account.
 public extension Account {
+	/// User id as a string.
 	var userId: String { return id.uuidString }
 }
 
@@ -91,17 +94,27 @@ struct RequestParameters<Body: Encodable> {
 	}
 }
 
+/// Current state of user authentication for the app.
+/// One instance of this should be created when the app moves to try and authenticate the user.
+/// The global instance of this object is in `Authentication.shared`.
 public class Authentication {
+	/// The shared instance.
 	public private(set) static var shared: Authentication?
+	/// The id for the users mobile device.
+	/// This is used for APN and should be set by the app.
+	/// If this `deviceId` value is set when the user is authenticated then
+	/// then the `addDeviceId` call will automatically send the value to the Auth server.
 	public static var deviceId: String?
-	
+	/// Error object thrown for some auth related problems.
 	public struct Error: Swift.Error, CustomStringConvertible {
+		/// A description of the problem.
 		public let description: String
 		init(_ message: String)  {
 			description = message
 		}
 	}
-	
+	/// The token returned by the auth server after successful authentication.
+	/// When set, this value will be written to UserDefaults.
 	public var token: TokenAcquiredResponse? {
 		didSet {
 			if let s = token {
@@ -117,6 +130,7 @@ public class Authentication {
 			UserDefaults.standard.synchronize()
 		}
 	}
+	/// The authenticated user. If this is nil then the user is not authenticated.
 	public var user: AuthenticatedUser? {
 		didSet {
 			if let deviceId = Authentication.deviceId {
@@ -129,7 +143,7 @@ public class Authentication {
 		}
 	}
 	var oauth: OAuth2Swift?
-	
+	/// Init an Authentication.
 	public init() {
 		if let sessionId = UserDefaults.standard.string(forKey: sessionIdKey) {
 			token = TokenAcquiredResponse(token: sessionId, account: nil)
@@ -147,7 +161,8 @@ public class Authentication {
 		}
 		return [:]
 	}
-	
+	/// Checks if the user is logged in and that the current token is valid.
+	/// The response will be delivered to the provided callback.
 	public func checkLoggedIn(callback: @escaping (APIResponse<Bool>) -> ()) {
 		if let _ = user {
 			return callback(APIResponse {return true})
@@ -167,7 +182,8 @@ public class Authentication {
 			}
 		}
 	}
-	
+	/// Retrieves up to date information for the current user.
+	/// The response will be delivered to the provided callback.
 	public func getMe(callback: @escaping (APIResponse<AuthenticatedUser>) -> ()) {
 		sendRequest(endpoint: .me, sessionInfo: self.token) {
 			result in
@@ -183,7 +199,8 @@ public class Authentication {
 			}
 		}
 	}
-	
+	/// Remove all current authentication state.
+	/// The response will be delivered to the provided callback.
 	public func logout(callback: @escaping (APIResponse<Void>) -> ()) {
 		guard let _ = token else {
 			return callback(APIResponse {return})
@@ -193,7 +210,8 @@ public class Authentication {
 			self.user = nil
 		})
 	}
-	
+	/// Attempt to log in with the given address and password.
+	/// The response will be delivered to the provided callback.
 	public func login(email: String, password: String, callback: @escaping (APIResponse<Void>) -> ()) {
 		let params = RequestParameters(body: ["email":email, "password":password])
 		sendRequest(endpoint: .login, sessionInfo: self.token, post: false, parameters: params) {
@@ -207,7 +225,10 @@ public class Authentication {
 			}
 		}
 	}
-	
+	/// Complete a device local password recovery operation.
+	/// The `password` parameter will be the new password to set.
+	/// The `token` will have been obtained by
+	/// The response will be delivered to the provided callback.
 	public func completeRecoverPassword(address: String, password: String, token: String, callback: @escaping (APIResponse<Void>) -> ()) {
 		let req = AuthAPI.PasswordResetCompleteRequest(address: address, password: password, authToken: token)
 		let params = RequestParameters(body: req)
@@ -222,7 +243,10 @@ public class Authentication {
 			}
 		}
 	}
-	
+	/// Begin a password recovery operation.
+	/// If the user has previously logged in on the device and an APNS device token
+	/// was successfully set on the server then a device local recovery will be attempted.
+	/// The response will be delivered to the provided callback.
 	public func startRecoverPassword(address: String, callback: @escaping (APIResponse<Void>) -> ()) {
 		let req = AuthAPI.PasswordResetRequest(address: address, deviceId: Authentication.deviceId)
 		let params = RequestParameters(body: req)
@@ -236,7 +260,9 @@ public class Authentication {
 			}
 		}
 	}
-	
+	/// Get the meta-data attached to the account.
+	/// Currently only `fullName` is supported.
+	/// The response will be delivered to the provided callback.
 	public func getMeta(callback: @escaping (APIResponse<AccountPublicMeta>) -> ()) {
 		sendRequest(endpoint: .myData, sessionInfo: self.token) {
 			result in
@@ -248,7 +274,9 @@ public class Authentication {
 			}
 		}
 	}
-	
+	/// Set meta-data for the account.
+	/// Currently only `fullName` is supported.
+	/// The response will be delivered to the provided callback.
 	public func putMeta(data: AccountPublicMeta, callback: @escaping (APIResponse<Void>) -> ()) {
 		let params = RequestParameters(body: data)
 		sendRequest(endpoint: .myData, sessionInfo: self.token, post: true, parameters: params) {
@@ -261,7 +289,9 @@ public class Authentication {
 			}
 		}
 	}
-	
+	/// Attempt to register a new account.
+	/// If successful this will also set the full name meta value.
+	/// The response will be delivered to the provided callback.
 	public func register(email: String, password: String, fullName: String, callback: @escaping (APIResponse<Void>) -> ()) {
 		let params = RequestParameters(body: ["email":email, "password":password, "fullName":fullName])
 		sendRequest(endpoint: .register, sessionInfo: self.token, post: true, parameters: params) {
@@ -274,9 +304,10 @@ public class Authentication {
 			}
 		}
 	}
-	
+	/// Send the device id to the server.
+	/// It will be stored with the user's account and used for push notifications.
+	/// The response will be delivered to the provided callback.
 	public func addDeviceId(_ id: String, callback: @escaping (APIResponse<Void>) -> ()) {
-		print("Device Id \(id)")
 		let request = AuthAPI.AddMobileDeviceRequest(deviceId: id, deviceType: "ios")
 		let params = RequestParameters(body: request)
 		sendRequest(endpoint: .addDeviceId, sessionInfo: token, post: true, parameters: params) {
@@ -306,8 +337,9 @@ public class Authentication {
 		sendRequest(endpoint: endpoint, sessionInfo: sessionInfo, post: post, parameters: RequestParameters(body: [String:String]()), callback: callback)
 	}
 }
-
+/// OAuth related extensions on Authentication
 public extension Authentication {
+	/// Abstracted handler maker.
 	typealias OAuthURLHandlerMaker = (OAuth2Swift) -> OAuthSwiftURLHandlerType
 	
 	private func oauthSuccess(provider: String, _ credential: OAuthSwiftCredential, _ response: OAuthSwiftResponse?, _ parameters: OAuthSwift.Parameters, _ callback: @escaping (APIResponse<Void>) -> ()) {
@@ -321,7 +353,8 @@ public extension Authentication {
 			}
 		}
 	}
-	
+	/// Attempt to log in through Google OAuth.
+	/// The response will be delivered to the provided callback.
 	func loginOAuthGoogle(handlerMaker: OAuthURLHandlerMaker, callback: @escaping (APIResponse<Void>) -> ()) {
 		let params = settingsFor(service: "Google")
 		guard let oauth = OAuth2Swift(parameters: params) else {
@@ -344,6 +377,8 @@ public extension Authentication {
 		)
 	}
 	
+	/// Attempt to log in through Facebook OAuth.
+	/// The response will be delivered to the provided callback.
 	func loginOAuthFacebook(handlerMaker: OAuthURLHandlerMaker, callback: @escaping (APIResponse<Void>) -> ()) {
 		let params = settingsFor(service: "Facebook")
 		guard let oauth = OAuth2Swift(parameters: params) else {
@@ -366,6 +401,8 @@ public extension Authentication {
 		)
 	}
 	
+	/// Attempt to log in through Linkedin OAuth.
+	/// The response will be delivered to the provided callback.
 	func loginOAuthLinkedin(handlerMaker: OAuthURLHandlerMaker, callback: @escaping (APIResponse<Void>) -> ()) {
 		let params = settingsFor(service: "Linkedin")
 		guard let oauth = OAuth2Swift(parameters: params) else {

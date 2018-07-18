@@ -1,0 +1,10 @@
+# Run jazzy from the current directory to generate documentation.
+
+author: Ubiqweus
+github_url: https://github.com/ubiqweus/qBiqClientAPI
+min_acl: public
+clean: true
+theme: apple
+docset_path: /tmp/docset
+
+xcodebuild_arguments: [-project, qBiqClientAPI.xcodeproj, -target, qBiqClientAPI]

@@ -111,54 +111,76 @@ private func sendRequest(endpoint: APIEndpoint,
 	sendRequest(endpoint: endpoint, parameters: RequestParameters(body: [String:String]()), callback: callback)
 }
 
+/// Device related API calls.
 public extension DeviceAPI {
-	// all devices the user has available
-	// any device may ultimately belong to other users
+	/// List all devices the user has access to.
+	/// The response will be delivered to the provided callback.
 	static func listDevices(user: AuthenticatedUser, callback: @escaping (APIResponse<[DeviceAPI.ListDevicesResponseItem]>) -> ()) {
 		sendRequest(endpoint: .deviceList) { callback(APIResponse(from: $0)) }
 	}
+	/// Rename the indicated device.
+	/// This will fail if the user is not the device's owner.
+	/// The response will be delivered to the provided callback.
 	static func renameDevice(user: AuthenticatedUser, deviceId: DeviceURN, newName: String, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = DeviceAPI.UpdateRequest(deviceId: deviceId, name: newName)
 		sendRequest(endpoint: .deviceUpdate, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Attempt to register the indicated device.
+	/// If successful the current user will become the device's owner.
+	/// The response will be delivered to the provided callback.
 	static func registerDevice(user: AuthenticatedUser, deviceId: DeviceURN, callback: @escaping (APIResponse<BiqDevice>) -> ()) {
 		let request = DeviceAPI.RegisterRequest(deviceId: deviceId)
 		sendRequest(endpoint: .deviceRegister, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Attempt to unregister the indicated device.
+	/// If successful then the device will become unowned.
+	/// The response will be delivered to the provided callback.
 	static func unregisterDevice(user: AuthenticatedUser, deviceId: DeviceURN, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = DeviceAPI.RegisterRequest(deviceId: deviceId)
 		sendRequest(endpoint: .deviceUnregister, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Attempt to share the device to the current user.
+	/// This will fail if the device is locked and no valid share token is provided.
+	/// The response will be delivered to the provided callback.
 	static func shareDevice(user: AuthenticatedUser, deviceId: DeviceURN, shareToken: UUID?, callback: @escaping (APIResponse<BiqDevice>) -> ()) {
 		let request = DeviceAPI.ShareRequest(deviceId: deviceId, token: shareToken)
 		sendRequest(endpoint: .deviceShare, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Remove a shared device.
+	/// The response will be delivered to the provided callback.
 	static func unshareDevice(user: AuthenticatedUser, deviceId: DeviceURN, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = DeviceAPI.ShareRequest(deviceId: deviceId)
 		sendRequest(endpoint: .deviceUnshare, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Create a share token which can be given to another user permitting them to
+	/// observe the device's data.
+	/// The response will be delivered to the provided callback.
 	static func getShareDeviceToken(user: AuthenticatedUser, deviceId: DeviceURN, callback: @escaping (APIResponse<ShareTokenResponse>) -> ()) {
 		let request = DeviceAPI.ShareTokenRequest(deviceId: deviceId)
 		sendRequest(endpoint: .deviceShareToken, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Retrieve information on the indicated device.
+	/// The response will be delivered to the provided callback.
 	static func deviceInfo(user: AuthenticatedUser, deviceId: DeviceURN, callback: @escaping (APIResponse<BiqDevice>) -> ()) {
 		let request = DeviceAPI.ShareRequest(deviceId: deviceId)
 		sendRequest(endpoint: .deviceInfo, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Retrieve device observations of the indicated interval.
+	/// The response will be delivered to the provided callback.
 	static func deviceObservations(user: AuthenticatedUser,
 								   deviceId: DeviceURN,
 								   interval: DeviceAPI.ObsRequest.Interval, callback: @escaping (APIResponse<[ObsDatabase.BiqObservation]>) -> ()) {
@@ -167,6 +189,9 @@ public extension DeviceAPI {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Delete all device observations.
+	/// This will fail if the current user is not the device's owner.
+	/// The response will be delivered to the provided callback.
 	static func deviceDeleteObservations(user: AuthenticatedUser,
 										 deviceId: DeviceURN,
 										 callback: @escaping (APIResponse<[EmptyReply]>) -> ()) {
@@ -175,12 +200,17 @@ public extension DeviceAPI {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Set the flags for the indicated device.
+	/// Currently only the `locked` flag may be set.
+	/// The response will be delivered to the provided callback.
 	static func setDeviceFlags(user: AuthenticatedUser, deviceId: DeviceURN, newFlags: BiqDeviceFlag, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = DeviceAPI.UpdateRequest(deviceId: deviceId, flags: newFlags)
 		sendRequest(endpoint: .deviceUpdate, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Set the limits for the device.
+	/// The response will be delivered to the provided callback.
 	static func setDeviceLimits(user: AuthenticatedUser, deviceId: DeviceURN, newLimits: [DeviceLimit], callback: @escaping (APIResponse<DeviceLimitsResponse>) -> ()) {
 		let request = DeviceAPI.UpdateLimitsRequest(deviceId: deviceId, limits: newLimits)
 		sendRequest(endpoint: .deviceSetLimits, parameters: RequestParameters(body: request)) {
@@ -189,42 +219,57 @@ public extension DeviceAPI {
 	}
 }
 
+/// Device group related API calls.
 public extension GroupAPI {
+	/// List the groups belonging to the user.
+	/// The response will be delivered to the provided callback.
 	static func listGroups(user: AuthenticatedUser, callback: @escaping (APIResponse<[BiqDeviceGroup]>) -> ()) {
 		sendRequest(endpoint: .groupList) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// List the devices in the indicated group.
+	/// The response will be delivered to the provided callback.
 	static func listDevices(user: AuthenticatedUser, groupId: Id, callback: @escaping (APIResponse<[BiqDevice]>) -> ()) {
 		let request = GroupAPI.ListDevicesRequest(groupId: groupId)
 		sendRequest(endpoint: .groupDeviceList, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Create a group with the given name.
+	/// The response will be delivered to the provided callback.
 	static func createGroup(user: AuthenticatedUser, groupName: String, callback: @escaping (APIResponse<BiqDeviceGroup>) -> ()) {
 		let request = GroupAPI.CreateRequest(name: groupName)
 		sendRequest(endpoint: .groupCreate, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Rename the indicated group.
+	/// The response will be delivered to the provided callback.
 	static func renameGroup(user: AuthenticatedUser, groupId: Id, newName: String, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = GroupAPI.UpdateRequest(groupId: groupId, name: newName)
 		sendRequest(endpoint: .groupUpdate, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Delete the indicated group.
+	/// The response will be delivered to the provided callback.
 	static func deleteGroup(user: AuthenticatedUser, groupId: Id, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = GroupAPI.DeleteRequest(groupId: groupId)
 		sendRequest(endpoint: .groupDelete, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Add the device to the indicated group.
+	/// The response will be delivered to the provided callback.
 	static func addGroupDevice(user: AuthenticatedUser, groupId: Id, deviceId: DeviceURN, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = GroupAPI.AddDeviceRequest(groupId: groupId, deviceId: deviceId)
 		sendRequest(endpoint: .groupDeviceAdd, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Remove the indicated device from the group.
+	/// The response will be delivered to the provided callback.
 	static func removeGroupDevice(user: AuthenticatedUser, groupId: Id, deviceId: DeviceURN, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = GroupAPI.AddDeviceRequest(groupId: groupId, deviceId: deviceId)
 		sendRequest(endpoint: .groupDeviceRemove, parameters: RequestParameters(body: request)) {

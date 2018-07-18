@@ -10,9 +10,14 @@ import Foundation
 import SwiftCodables
 import SAuthCodables
 
+/// Response for an API call.
+/// Call `try x.get()` to either return the response value or throw whatever error occured during the call.
 public struct APIResponse<T> {
+	/// Type of function returning response value or throwing the error.
 	public typealias GetFunc = (() throws -> T)
+	/// The `get` function.
 	public let get: GetFunc
+	/// Init an APIResponse.
 	public init(_ fnc: @escaping GetFunc) {
 		get = fnc
 	}
@@ -23,9 +28,13 @@ let apiRequestTimeout = 60.0
 let apiRequestTimeout = 60.0
 #endif
 
+/// Namespace around lower level API request activities.
 public struct APIRequest {
+	/// Error type thrown from API calls.
 	public struct Error: Swift.Error, Codable {
+		/// The HTTP status code for the error response.
 		public let status: Int
+		/// Description of the problem.
 		public let description: String
 	}
 	static func sendRequest<T>(endpointURL url: URL,

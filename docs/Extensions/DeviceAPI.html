@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>DeviceAPI Extension Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Extension/DeviceAPI" class="dashAnchor"></a>
+    <a title="DeviceAPI Extension Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/ubiqweus/qBiqClientAPI"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        DeviceAPI Extension Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Authentication.html">Authentication</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Authentication/Error.html">– Error</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Account.html">Account</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/DeviceAPI.html">DeviceAPI</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/GroupAPI.html">GroupAPI</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/APIRequest.html">APIRequest</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/APIRequest/Error.html">– Error</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/APIResponse.html">APIResponse</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>DeviceAPI</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">DeviceAPI</span></code></pre>
+
+                </div>
+              </div>
+            <p>Device related API calls.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E11listDevices4user8callbacky05SAuthB07AccountV_yAD11APIResponseVySayAC04ListH12ResponseItemVGGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/listDevices(user:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E11listDevices4user8callbacky05SAuthB07AccountV_yAD11APIResponseVySayAC04ListH12ResponseItemVGGctFZ">listDevices(user:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>List all devices the user has access to.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">listDevices</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="p">[</span><span class="kt">DeviceAPI</span><span class="o">.</span><span class="kt">ListDevicesResponseItem</span><span class="p">]</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E06renameC04user8deviceId7newName8callbacky05SAuthB07AccountV_S2SyAD11APIResponseVyAJ10EmptyReplyVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/renameDevice(user:deviceId:newName:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E06renameC04user8deviceId7newName8callbacky05SAuthB07AccountV_S2SyAD11APIResponseVyAJ10EmptyReplyVGctFZ">renameDevice(user:deviceId:newName:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Rename the indicated device.
+This will fail if the user is not the device&rsquo;s owner.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">renameDevice</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">newName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">EmptyReply</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E08registerC04user8deviceId8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAA0eC0VGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/registerDevice(user:deviceId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E08registerC04user8deviceId8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAA0eC0VGctFZ">registerDevice(user:deviceId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Attempt to register the indicated device.
+If successful the current user will become the device&rsquo;s owner.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">registerDevice</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">BiqDevice</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E010unregisterC04user8deviceId8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAI10EmptyReplyVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/unregisterDevice(user:deviceId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E010unregisterC04user8deviceId8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAI10EmptyReplyVGctFZ">unregisterDevice(user:deviceId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Attempt to unregister the indicated device.
+If successful then the device will become unowned.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">unregisterDevice</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">EmptyReply</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E05shareC04user8deviceId0G5Token8callbacky05SAuthB07AccountV_SS10Foundation4UUIDVSgyAD11APIResponseVyAA0eC0VGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/shareDevice(user:deviceId:shareToken:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E05shareC04user8deviceId0G5Token8callbacky05SAuthB07AccountV_SS10Foundation4UUIDVSgyAD11APIResponseVyAA0eC0VGctFZ">shareDevice(user:deviceId:shareToken:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Attempt to share the device to the current user.
+This will fail if the device is locked and no valid share token is provided.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">shareDevice</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">shareToken</span><span class="p">:</span> <span class="kt">UUID</span><span class="p">?,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">BiqDevice</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E07unshareC04user8deviceId8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAI10EmptyReplyVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/unshareDevice(user:deviceId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E07unshareC04user8deviceId8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAI10EmptyReplyVGctFZ">unshareDevice(user:deviceId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Remove a shared device.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">unshareDevice</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">EmptyReply</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E08getShareC5Token4user8deviceId8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAC0hI8ResponseVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/getShareDeviceToken(user:deviceId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E08getShareC5Token4user8deviceId8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAC0hI8ResponseVGctFZ">getShareDeviceToken(user:deviceId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Create a share token which can be given to another user permitting them to
+observe the device&rsquo;s data.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">getShareDeviceToken</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">ShareTokenResponse</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E10deviceInfo4user0G2Id8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAA0eC0VGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/deviceInfo(user:deviceId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E10deviceInfo4user0G2Id8callbacky05SAuthB07AccountV_SSyAD11APIResponseVyAA0eC0VGctFZ">deviceInfo(user:deviceId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Retrieve information on the indicated device.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">deviceInfo</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">BiqDevice</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E18deviceObservations4user0G2Id8interval8callbacky05SAuthB07AccountV_SSAC10ObsRequestV8IntervalOyAD11APIResponseVySayAA0O8DatabaseO0E11ObservationVGGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/deviceObservations(user:deviceId:interval:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E18deviceObservations4user0G2Id8interval8callbacky05SAuthB07AccountV_SSAC10ObsRequestV8IntervalOyAD11APIResponseVySayAA0O8DatabaseO0E11ObservationVGGctFZ">deviceObservations(user:deviceId:interval:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Retrieve device observations of the indicated interval.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">deviceObservations</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span>
+							   <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span>
+							   <span class="nv">interval</span><span class="p">:</span> <span class="kt">DeviceAPI</span><span class="o">.</span><span class="kt">ObsRequest</span><span class="o">.</span><span class="kt">Interval</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="p">[</span><span class="kt">ObsDatabase</span><span class="o">.</span><span class="kt">BiqObservation</span><span class="p">]</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E24deviceDeleteObservations4user0G2Id8callbacky05SAuthB07AccountV_SSyAD11APIResponseVySayAI10EmptyReplyVGGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/deviceDeleteObservations(user:deviceId:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E24deviceDeleteObservations4user0G2Id8callbacky05SAuthB07AccountV_SSyAD11APIResponseVySayAI10EmptyReplyVGGctFZ">deviceDeleteObservations(user:deviceId:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Delete all device observations.
+This will fail if the current user is not the device&rsquo;s owner.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">deviceDeleteObservations</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span>
+									 <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span>
+									 <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="p">[</span><span class="kt">EmptyReply</span><span class="p">]</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E03setC5Flags4user8deviceId03newH08callbacky05SAuthB07AccountV_SSAA0eC4FlagVyAD11APIResponseVyAJ10EmptyReplyVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/setDeviceFlags(user:deviceId:newFlags:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E03setC5Flags4user8deviceId03newH08callbacky05SAuthB07AccountV_SSAA0eC4FlagVyAD11APIResponseVyAJ10EmptyReplyVGctFZ">setDeviceFlags(user:deviceId:newFlags:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set the flags for the indicated device.
+Currently only the <code>locked</code> flag may be set.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">setDeviceFlags</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">newFlags</span><span class="p">:</span> <span class="kt">BiqDeviceFlag</span><span class="p">,</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">EmptyReply</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E03setC6Limits4user8deviceId03newH08callbacky05SAuthB07AccountV_SSSayAC0C5LimitVGyAD11APIResponseVyAC06UpdateH7RequestVGctFZ"></a>
+                    <a name="//apple_ref/swift/Method/setDeviceLimits(user:deviceId:newLimits:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13SwiftCodables9DeviceAPIO010qBiqClientD0E03setC6Limits4user8deviceId03newH08callbacky05SAuthB07AccountV_SSSayAC0C5LimitVGyAD11APIResponseVyAC06UpdateH7RequestVGctFZ">setDeviceLimits(user:deviceId:newLimits:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set the limits for the device.
+The response will be delivered to the provided callback.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">setDeviceLimits</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:13qBiqClientAPI17AuthenticatedUsera">AuthenticatedUser</a></span><span class="p">,</span> <span class="nv">deviceId</span><span class="p">:</span> <span class="kt">DeviceURN</span><span class="p">,</span> <span class="nv">newLimits</span><span class="p">:</span> <span class="p">[</span><span class="kt">DeviceLimit</span><span class="p">],</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Structs/APIResponse.html">APIResponse</a></span><span class="o">&lt;</span><span class="kt">DeviceLimitsResponse</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Ubiqweus</a>. All rights reserved. (Last updated: 2018-07-18)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
