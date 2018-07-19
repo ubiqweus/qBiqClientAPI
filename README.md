@@ -1,3 +1,5 @@
+![](webroot/images/ubiqweus-logo-colour@2x.png)
+
 # qBiqClientAPI
 ## Client API for use on iOS/macOS
 
