@@ -230,7 +230,7 @@ public extension GroupAPI {
 	}
 	/// List the devices in the indicated group.
 	/// The response will be delivered to the provided callback.
-	static func listDevices(user: AuthenticatedUser, groupId: Id, callback: @escaping (APIResponse<[BiqDevice]>) -> ()) {
+	static func listDevices(user: AuthenticatedUser, groupId: GroupId, callback: @escaping (APIResponse<[BiqDevice]>) -> ()) {
 		let request = GroupAPI.ListDevicesRequest(groupId: groupId)
 		sendRequest(endpoint: .groupDeviceList, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
@@ -246,7 +246,7 @@ public extension GroupAPI {
 	}
 	/// Rename the indicated group.
 	/// The response will be delivered to the provided callback.
-	static func renameGroup(user: AuthenticatedUser, groupId: Id, newName: String, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
+	static func renameGroup(user: AuthenticatedUser, groupId: GroupId, newName: String, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = GroupAPI.UpdateRequest(groupId: groupId, name: newName)
 		sendRequest(endpoint: .groupUpdate, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
@@ -254,7 +254,7 @@ public extension GroupAPI {
 	}
 	/// Delete the indicated group.
 	/// The response will be delivered to the provided callback.
-	static func deleteGroup(user: AuthenticatedUser, groupId: Id, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
+	static func deleteGroup(user: AuthenticatedUser, groupId: GroupId, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = GroupAPI.DeleteRequest(groupId: groupId)
 		sendRequest(endpoint: .groupDelete, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
@@ -262,7 +262,7 @@ public extension GroupAPI {
 	}
 	/// Add the device to the indicated group.
 	/// The response will be delivered to the provided callback.
-	static func addGroupDevice(user: AuthenticatedUser, groupId: Id, deviceId: DeviceURN, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
+	static func addGroupDevice(user: AuthenticatedUser, groupId: GroupId, deviceId: DeviceURN, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = GroupAPI.AddDeviceRequest(groupId: groupId, deviceId: deviceId)
 		sendRequest(endpoint: .groupDeviceAdd, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
@@ -270,7 +270,7 @@ public extension GroupAPI {
 	}
 	/// Remove the indicated device from the group.
 	/// The response will be delivered to the provided callback.
-	static func removeGroupDevice(user: AuthenticatedUser, groupId: Id, deviceId: DeviceURN, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
+	static func removeGroupDevice(user: AuthenticatedUser, groupId: GroupId, deviceId: DeviceURN, callback: @escaping (APIResponse<EmptyReply>) -> ()) {
 		let request = GroupAPI.AddDeviceRequest(groupId: groupId, deviceId: deviceId)
 		sendRequest(endpoint: .groupDeviceRemove, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
