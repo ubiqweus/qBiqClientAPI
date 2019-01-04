@@ -40,9 +40,13 @@ enum APIEndpoint: String {
 	case deviceUnshare = "/device/unshare"
 	case deviceUpdate = "/device/update"
 	case deviceObservations = "/device/obs"
+  case deviceSummary = "/device/sum"
 	case deviceDeleteObservations = "/device/obs/delete"
 	case deviceSetLimits = "/device/limits"
-	
+
+  case chatLoad = "/chat/load"
+  case chatSave = "/chat/save"
+
 	var url: URL {
 		return URL(string: "\(apiServerBaseURL)/\(apiVersion)\(rawValue)")!
 	}
@@ -72,6 +76,8 @@ enum APIEndpoint: String {
 			return true
 		case .deviceObservations:
 			return false
+    case .deviceSummary:
+      return false
 		case .deviceShare:
 			return true
 		case .deviceUnshare:
@@ -84,9 +90,37 @@ enum APIEndpoint: String {
 			return true
 		case .deviceShareToken:
 			return true
+    case .chatLoad:
+      return false
+    case .chatSave:
+      return true
 		}
 	}
 }
+
+public struct MovementSummary: Codable {
+  public var unitid = 0
+  public var moves = 0
+}
+
+public struct ChatLogCreation: Codable {
+  public let topic: String
+  public let content: String
+}
+
+public struct ChatLog: Codable {
+  public let id: Int64
+  public let utc: String
+  public let topic: String
+  public let poster: String
+  public let content: String
+}
+
+public struct ChatLogQuery: Codable {
+  public let last: Int64
+  public let topic: String
+}
+
 
 extension APIResponse where T: Decodable {
 	init(from: APIResponse<Data>) {
@@ -189,6 +223,37 @@ public extension DeviceAPI {
 			callback(APIResponse(from: $0))
 		}
 	}
+  /// Retrieve device summary of the indicated interval.
+  /// The response will be delivered to the provided callback.
+  static func deviceSummary(user: AuthenticatedUser,
+                                 deviceId: DeviceURN,
+                                 interval: DeviceAPI.ObsRequest.Interval, callback: @escaping (APIResponse<[MovementSummary]>) -> ()) {
+    let request = DeviceAPI.ObsRequest(deviceId: deviceId, interval: interval)
+    sendRequest(endpoint: .deviceSummary, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func chatLoad(user: AuthenticatedUser,
+                       deviceId: DeviceURN,
+                       checkpoint: Int64,
+                       callback: @escaping (APIResponse<[ChatLog]>) -> ()) {
+    let request = ChatLogQuery.init(last: checkpoint, topic: deviceId)
+    sendRequest(endpoint: .chatLoad, parameters: RequestParameters(body: request)){
+      callback(APIResponse(from : $0))
+    }
+  }
+
+  static func chatSave(user: AuthenticatedUser,
+                       deviceId: DeviceURN,
+                       message: String,
+                       callback: @escaping (APIResponse<Int>) -> ()) {
+    let request = ChatLogCreation.init(topic: deviceId, content: message)
+    sendRequest(endpoint: .chatSave, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+  
 	/// Delete all device observations.
 	/// This will fail if the current user is not the device's owner.
 	/// The response will be delivered to the provided callback.
