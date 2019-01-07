@@ -47,6 +47,9 @@ enum APIEndpoint: String {
   case chatLoad = "/chat/load"
   case chatSave = "/chat/save"
 
+  case profileUpload = "/profile/upload"
+  case profileDownload = "/profile/download"
+
 	var url: URL {
 		return URL(string: "\(apiServerBaseURL)/\(apiVersion)\(rawValue)")!
 	}
@@ -94,6 +97,10 @@ enum APIEndpoint: String {
       return false
     case .chatSave:
       return true
+    case .profileUpload:
+      return true
+    case .profileDownload:
+      return false
 		}
 	}
 }
@@ -118,9 +125,15 @@ public struct ChatLog: Codable {
 
 public struct ChatLogQuery: Codable {
   public let last: Int64
-  public let topic: String
 }
 
+public struct ProfileAPIResponse: Codable {
+  public var content = ""
+}
+
+public struct ProfileAPIRequest: Codable {
+  public var uid = ""
+}
 
 extension APIResponse where T: Decodable {
 	init(from: APIResponse<Data>) {
@@ -235,10 +248,9 @@ public extension DeviceAPI {
   }
 
   static func chatLoad(user: AuthenticatedUser,
-                       deviceId: DeviceURN,
                        checkpoint: Int64,
                        callback: @escaping (APIResponse<[ChatLog]>) -> ()) {
-    let request = ChatLogQuery.init(last: checkpoint, topic: deviceId)
+    let request = ChatLogQuery.init(last: checkpoint)
     sendRequest(endpoint: .chatLoad, parameters: RequestParameters(body: request)){
       callback(APIResponse(from : $0))
     }
@@ -253,7 +265,22 @@ public extension DeviceAPI {
       callback(APIResponse(from: $0))
     }
   }
-  
+
+  static func profileUpload(user: AuthenticatedUser, payload: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+    let request = ProfileAPIResponse.init(content: payload)
+    sendRequest(endpoint: .profileUpload, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func profileDownload(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+    let request = ProfileAPIRequest.init(uid: uid)
+    sendRequest(endpoint: .profileDownload, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+
 	/// Delete all device observations.
 	/// This will fail if the current user is not the device's owner.
 	/// The response will be delivered to the provided callback.
