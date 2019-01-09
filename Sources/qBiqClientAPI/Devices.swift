@@ -32,6 +32,7 @@ enum APIEndpoint: String {
 	case groupDeviceList = "/group/device/list"
 	
 	case deviceList = "/device/list"
+  case deviceStat = "/device/stat"
 	case deviceRegister = "/device/register"
 	case deviceUnregister = "/device/unregister"
 	case deviceInfo = "/device/info"
@@ -49,6 +50,8 @@ enum APIEndpoint: String {
 
   case profileUpload = "/profile/upload"
   case profileDownload = "/profile/download"
+  case profileUpdateText = "/profile/update"
+  case profileGetText = "/profile/get"
 
 	var url: URL {
 		return URL(string: "\(apiServerBaseURL)/\(apiVersion)\(rawValue)")!
@@ -71,6 +74,8 @@ enum APIEndpoint: String {
 			return false
 		case .deviceList:
 			return false
+    case .deviceStat:
+      return false
 		case .deviceRegister:
 			return true
 		case .deviceUnregister:
@@ -101,8 +106,18 @@ enum APIEndpoint: String {
       return true
     case .profileDownload:
       return false
+    case .profileUpdateText:
+      return true
+    case .profileGetText:
+      return false
 		}
 	}
+}
+
+public struct QBiqStat: Codable {
+  public let owned: Int
+  public let followed: Int
+  public let following: Int
 }
 
 public struct MovementSummary: Codable {
@@ -276,6 +291,27 @@ public extension DeviceAPI {
   static func profileDownload(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
     let request = ProfileAPIRequest.init(uid: uid)
     sendRequest(endpoint: .profileDownload, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func profileUpdateText(user: AuthenticatedUser, payload: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+    let request = ProfileAPIResponse.init(content: payload)
+    sendRequest(endpoint: .profileUpdateText, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func profileGetText(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+    let request = ProfileAPIRequest.init(uid: uid)
+    sendRequest(endpoint: .profileGetText, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func deviceStat(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<QBiqStat>) -> ()) {
+    let request = ProfileAPIRequest.init(uid: uid)
+    sendRequest(endpoint: .deviceStat, parameters: RequestParameters(body: request)) {
       callback(APIResponse(from: $0))
     }
   }
