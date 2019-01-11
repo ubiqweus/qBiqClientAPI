@@ -45,6 +45,8 @@ enum APIEndpoint: String {
   case deviceSummary = "/device/sum"
 	case deviceDeleteObservations = "/device/obs/delete"
 	case deviceSetLimits = "/device/limits"
+  case deviceProfileUpdate = "/device/profile/update"
+  case deviceProfileGet = "/device/profile/get"
 
   case chatLoad = "/chat/load"
   case chatSave = "/chat/save"
@@ -102,6 +104,10 @@ enum APIEndpoint: String {
 			return true
 		case .deviceShareToken:
 			return true
+    case .deviceProfileGet:
+      return false
+    case .deviceProfileUpdate:
+      return true
     case .chatLoad:
       return false
     case .chatSave:
@@ -129,6 +135,12 @@ public struct QBiqStat: Codable {
   public let owned: Int
   public let followed: Int
   public let following: Int
+}
+
+public struct QBiqProfile: Codable {
+  public let id: DeviceURN
+  public let description: String
+  public let tags: [String]
 }
 
 public struct MovementSummary: Codable {
@@ -269,6 +281,22 @@ public extension DeviceAPI {
                                  interval: DeviceAPI.ObsRequest.Interval, callback: @escaping (APIResponse<[MovementSummary]>) -> ()) {
     let request = DeviceAPI.ObsRequest(deviceId: deviceId, interval: interval)
     sendRequest(endpoint: .deviceSummary, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func deviceProfileUpdate(user: AuthenticatedUser,
+                                  profile: QBiqProfile,
+                                  callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+    sendRequest(endpoint: .deviceProfileUpdate, parameters: RequestParameters(body: profile)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func deviceProfileGet(user: AuthenticatedUser, uid: String,
+                               callback: @escaping (APIResponse<QBiqProfile>) -> ()) {
+    let request = ProfileAPIRequest.init(uid: uid)
+    sendRequest(endpoint: .deviceProfileGet, parameters: RequestParameters(body: request)) {
       callback(APIResponse(from: $0))
     }
   }
