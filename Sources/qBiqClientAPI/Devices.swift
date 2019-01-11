@@ -30,7 +30,8 @@ enum APIEndpoint: String {
 	case groupDeviceAdd = "/group/device/add"
 	case groupDeviceRemove = "/group/device/remove"
 	case groupDeviceList = "/group/device/list"
-	
+
+  case deviceSearch = "/device/search"
 	case deviceList = "/device/list"
   case deviceStat = "/device/stat"
 	case deviceRegister = "/device/register"
@@ -52,6 +53,7 @@ enum APIEndpoint: String {
   case profileDownload = "/profile/download"
   case profileUpdateText = "/profile/update"
   case profileGetText = "/profile/get"
+  case profileGetFullName = "/profile/name"
 
 	var url: URL {
 		return URL(string: "\(apiServerBaseURL)/\(apiVersion)\(rawValue)")!
@@ -72,6 +74,8 @@ enum APIEndpoint: String {
 			return true
 		case .groupDeviceList:
 			return false
+    case .deviceSearch:
+      return false
 		case .deviceList:
 			return false
     case .deviceStat:
@@ -110,8 +114,15 @@ enum APIEndpoint: String {
       return true
     case .profileGetText:
       return false
+    case .profileGetFullName:
+      return false
 		}
 	}
+}
+
+public struct QBiqSearchResult: Codable {
+  public let id: String
+  public let name: String
 }
 
 public struct QBiqStat: Codable {
@@ -309,9 +320,23 @@ public extension DeviceAPI {
     }
   }
 
+  static func profileGetFullName(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+    let request = ProfileAPIRequest.init(uid: uid)
+    sendRequest(endpoint: .profileGetFullName, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
   static func deviceStat(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<QBiqStat>) -> ()) {
     let request = ProfileAPIRequest.init(uid: uid)
     sendRequest(endpoint: .deviceStat, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func deviceSearch(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<[QBiqSearchResult]>) -> ()) {
+    let request = ProfileAPIRequest.init(uid: uid)
+    sendRequest(endpoint: .deviceSearch, parameters: RequestParameters(body: request)) {
       callback(APIResponse(from: $0))
     }
   }
