@@ -47,6 +47,7 @@ enum APIEndpoint: String {
 	case deviceSetLimits = "/device/limits"
   case deviceProfileUpdate = "/device/profile/update"
   case deviceProfileGet = "/device/profile/get"
+  case deviceLocation = "/device/location"
 
   case chatLoad = "/chat/load"
   case chatSave = "/chat/save"
@@ -108,6 +109,8 @@ enum APIEndpoint: String {
       return false
     case .deviceProfileUpdate:
       return true
+    case .deviceLocation:
+      return true
     case .chatLoad:
       return false
     case .chatSave:
@@ -141,6 +144,18 @@ public struct QBiqProfile: Codable {
   public let id: DeviceURN
   public let description: String
   public let tags: [String]
+  public init(_ devId: DeviceURN, _ summary: String, labels: [String]) {
+    id = devId
+    description = summary
+    tags = labels
+  }
+}
+
+public struct QBiqLocationUpdate: Codable {
+  public var id: DeviceURN = ""
+  public var x: Double = 0
+  public var y: Double = 0
+  public init() { }
 }
 
 public struct MovementSummary: Codable {
@@ -297,6 +312,13 @@ public extension DeviceAPI {
                                callback: @escaping (APIResponse<QBiqProfile>) -> ()) {
     let request = ProfileAPIRequest.init(uid: uid)
     sendRequest(endpoint: .deviceProfileGet, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func deviceLocation(user: AuthenticatedUser, location: QBiqLocationUpdate,
+                             callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+    sendRequest(endpoint: .deviceLocation, parameters: RequestParameters(body: location)) {
       callback(APIResponse(from: $0))
     }
   }
