@@ -48,6 +48,7 @@ enum APIEndpoint: String {
   case deviceProfileUpdate = "/device/profile/update"
   case deviceProfileGet = "/device/profile/get"
   case deviceLocation = "/device/location"
+  case deviceFollowers = "/device/followers"
 
   case chatLoad = "/chat/load"
   case chatSave = "/chat/save"
@@ -111,6 +112,8 @@ enum APIEndpoint: String {
       return true
     case .deviceLocation:
       return true
+    case .deviceFollowers:
+      return true
     case .chatLoad:
       return false
     case .chatSave:
@@ -142,10 +145,12 @@ public struct QBiqStat: Codable {
 
 public struct QBiqProfile: Codable {
   public let id: DeviceURN
+  public let sharable: Int
   public let description: String
   public let tags: [String]
-  public init(_ devId: DeviceURN, _ summary: String, labels: [String]) {
+  public init(_ devId: DeviceURN, _ sharable: Int, _ summary: String, labels: [String]) {
     id = devId
+    self.sharable = sharable
     description = summary
     tags = labels
   }
@@ -319,6 +324,14 @@ public extension DeviceAPI {
   static func deviceLocation(user: AuthenticatedUser, location: QBiqLocationUpdate,
                              callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
     sendRequest(endpoint: .deviceLocation, parameters: RequestParameters(body: location)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func deviceFollowers(user: AuthenticatedUser, deviceId: DeviceURN,
+                              callback: @escaping (APIResponse<[String]>) -> ()) {
+    let req = RequestParameters<String>(rawString: deviceId)
+    sendRequest(endpoint: .deviceFollowers, parameters: req) {
       callback(APIResponse(from: $0))
     }
   }
