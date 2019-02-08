@@ -59,6 +59,7 @@ enum APIEndpoint: String {
   case profileUpdateText = "/profile/update"
   case profileGetText = "/profile/get"
   case profileGetFullName = "/profile/name"
+  case profileBill = "/profile/bill"
 
 	var url: URL {
 		return URL(string: "\(apiServerBaseURL)/\(apiVersion)\(rawValue)")!
@@ -131,6 +132,8 @@ enum APIEndpoint: String {
       return false
     case .profileGetFullName:
       return false
+    case .profileBill:
+      return true
 		}
 	}
 }
@@ -138,6 +141,23 @@ enum APIEndpoint: String {
 public struct QBiqSearchResult: Codable {
   public let id: String
   public let name: String
+}
+
+public struct Receipt: Codable {
+  public let product_id: String
+  public let purchase_date_ms: String
+  public let expires_date_ms: String
+
+  private func getTimeStamp(_ value: String) -> Int {
+    return Int((TimeInterval(purchase_date_ms) ?? 0) / 1000)
+  }
+  public var timestampPurchase: Int {
+    return getTimeStamp(purchase_date_ms)
+  }
+
+  public var timestampExpiration: Int {
+    return getTimeStamp(expires_date_ms)
+  }
 }
 
 public struct QBiqStat: Codable {
@@ -405,6 +425,13 @@ public extension DeviceAPI {
   static func profileGetFullName(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
     let request = ProfileAPIRequest.init(uid: uid)
     sendRequest(endpoint: .profileGetFullName, parameters: RequestParameters(body: request)) {
+      callback(APIResponse(from: $0))
+    }
+  }
+
+  static func profileValidateBill(user: AuthenticatedUser, receipt: Data, callback: @escaping (APIResponse<[Receipt]>) -> ()) {
+    let postbody = receipt.base64EncodedString()
+    sendRequest(endpoint: .profileBill, parameters: RequestParameters<String>(rawString: postbody)) {
       callback(APIResponse(from: $0))
     }
   }
