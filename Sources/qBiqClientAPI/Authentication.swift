@@ -12,11 +12,11 @@ import SwiftCodables
 import SAuthCodables
 
 #if false//DEBUG // this
-	#if TARGET_IPHONE_SIMULATOR
+#if TARGET_IPHONE_SIMULATOR
 let authServerBaseURL = "http://localhost:8181"
-	#else
+#else
 let authServerBaseURL = "http://192.168.0.26:8181"
-	#endif
+#endif
 #else
 let authServerBaseURL = "https://auth.ubiqweus.com"
 #endif
@@ -60,16 +60,16 @@ struct RequestParameters<Body: Encodable> {
 	typealias NameValuePair = (name: String, value: String)
 	let body: Body
 	let paths: [String]
-  var _rawString: String? = nil
-
-  init(rawString: String) {
-    _rawString = rawString
-    body = rawString as! Body
-    paths = []
-  }
-
+	var _rawString: String? = nil
+	
+	init(rawString: String) {
+		_rawString = rawString
+		body = rawString as! Body
+		paths = []
+	}
+	
 	init(body b: Body, paths p: [String] = []) {
-    _rawString = nil
+		_rawString = nil
 		body = b
 		paths = p
 	}
@@ -85,12 +85,12 @@ struct RequestParameters<Body: Encodable> {
 	}
 	
 	var jsonEncoded: String {
-    if let raw = _rawString {
-      return raw
-    }
+		if let raw = _rawString {
+			return raw
+		}
 		guard let data = try? JSONEncoder().encode(body),
-				let s = String(data: data, encoding: .utf8) else {
-			return "{}"
+			let s = String(data: data, encoding: .utf8) else {
+				return "{}"
 		}
 		return s
 	}
@@ -131,9 +131,9 @@ public class Authentication {
 			if let s = token {
 				UserDefaults.standard.set(s.token, forKey: sessionIdKey)
 				user = s.account
-			#if DEBUG
+				#if DEBUG
 				print("token: \(token?.token ?? "none")")
-			#endif
+				#endif
 			} else {
 				UserDefaults.standard.removeObject(forKey: sessionIdKey)
 				user = nil
@@ -333,10 +333,10 @@ public class Authentication {
 	}
 	
 	fileprivate func sendRequest<T>(endpoint: AuthAPIEndpoint,
-								 sessionInfo: TokenAcquiredResponse? = nil,
-								 post: Bool = false,
-								 parameters: RequestParameters<T>,
-								 callback: @escaping (APIResponse<Data>) -> ()) {
+									sessionInfo: TokenAcquiredResponse? = nil,
+									post: Bool = false,
+									parameters: RequestParameters<T>,
+									callback: @escaping (APIResponse<Data>) -> ()) {
 		let url = parameters.complete(url: endpoint.url)
 		APIRequest.sendRequest(endpointURL: url, sessionInfo: sessionInfo, post: post, parameters: parameters, callback: callback)
 	}
@@ -379,12 +379,12 @@ public extension Authentication {
 						success: {
 							(a, b, c) in
 							return self.oauthSuccess(provider: "google", a, b, c, callback)
-						},
+		},
 						failure: {
 							error in
 							self.oauth = nil
 							callback(APIResponse {throw error})
-						}
+		}
 		)
 	}
 	

@@ -11,11 +11,11 @@ import SwiftCodables
 import SAuthCodables
 
 #if false//DEBUG // this
-	#if TARGET_IPHONE_SIMULATOR
+#if TARGET_IPHONE_SIMULATOR
 let apiServerBaseURL = "http://localhost:8080"
-	#else
+#else
 let apiServerBaseURL = "http://10.10.1.134:8080"//"http://192.168.0.26:8080"
-	#endif
+#endif
 #else
 let apiServerBaseURL = "https://api.ubiqweus.com"
 #endif
@@ -30,10 +30,10 @@ enum APIEndpoint: String {
 	case groupDeviceAdd = "/group/device/add"
 	case groupDeviceRemove = "/group/device/remove"
 	case groupDeviceList = "/group/device/list"
-
-  case deviceSearch = "/device/search"
+	
+	case deviceSearch = "/device/search"
 	case deviceList = "/device/list"
-  case deviceStat = "/device/stat"
+	case deviceStat = "/device/stat"
 	case deviceRegister = "/device/register"
 	case deviceUnregister = "/device/unregister"
 	case deviceInfo = "/device/info"
@@ -42,25 +42,25 @@ enum APIEndpoint: String {
 	case deviceUnshare = "/device/unshare"
 	case deviceUpdate = "/device/update"
 	case deviceObservations = "/device/obs"
-  case deviceSummary = "/device/sum"
+	case deviceSummary = "/device/sum"
 	case deviceDeleteObservations = "/device/obs/delete"
 	case deviceSetLimits = "/device/limits"
-  case deviceProfileUpdate = "/device/profile/update"
-  case deviceProfileGet = "/device/profile/get"
-  case deviceLocation = "/device/location"
-  case deviceFollowers = "/device/followers"
-  case deviceTag = "/device/tag"
-
-  case chatLoad = "/chat/load"
-  case chatSave = "/chat/save"
-
-  case profileUpload = "/profile/upload"
-  case profileDownload = "/profile/download"
-  case profileUpdateText = "/profile/update"
-  case profileGetText = "/profile/get"
-  case profileGetFullName = "/profile/name"
-  case profileBill = "/profile/bill"
-
+	case deviceProfileUpdate = "/device/profile/update"
+	case deviceProfileGet = "/device/profile/get"
+	case deviceLocation = "/device/location"
+	case deviceFollowers = "/device/followers"
+	case deviceTag = "/device/tag"
+	
+	case chatLoad = "/chat/load"
+	case chatSave = "/chat/save"
+	
+	case profileUpload = "/profile/upload"
+	case profileDownload = "/profile/download"
+	case profileUpdateText = "/profile/update"
+	case profileGetText = "/profile/get"
+	case profileGetFullName = "/profile/name"
+	case profileBill = "/profile/bill"
+	
 	var url: URL {
 		return URL(string: "\(apiServerBaseURL)/\(apiVersion)\(rawValue)")!
 	}
@@ -80,12 +80,12 @@ enum APIEndpoint: String {
 			return true
 		case .groupDeviceList:
 			return false
-    case .deviceSearch:
-      return false
+		case .deviceSearch:
+			return false
 		case .deviceList:
 			return false
-    case .deviceStat:
-      return false
+		case .deviceStat:
+			return false
 		case .deviceRegister:
 			return true
 		case .deviceUnregister:
@@ -94,8 +94,8 @@ enum APIEndpoint: String {
 			return true
 		case .deviceObservations:
 			return false
-    case .deviceSummary:
-      return false
+		case .deviceSummary:
+			return false
 		case .deviceShare:
 			return true
 		case .deviceUnshare:
@@ -108,117 +108,117 @@ enum APIEndpoint: String {
 			return true
 		case .deviceShareToken:
 			return true
-    case .deviceProfileGet:
-      return false
-    case .deviceProfileUpdate:
-      return true
-    case .deviceLocation:
-      return true
-    case .deviceFollowers:
-      return true
-    case .deviceTag:
-      return false
-    case .chatLoad:
-      return false
-    case .chatSave:
-      return true
-    case .profileUpload:
-      return true
-    case .profileDownload:
-      return false
-    case .profileUpdateText:
-      return true
-    case .profileGetText:
-      return false
-    case .profileGetFullName:
-      return false
-    case .profileBill:
-      return true
+		case .deviceProfileGet:
+			return false
+		case .deviceProfileUpdate:
+			return true
+		case .deviceLocation:
+			return true
+		case .deviceFollowers:
+			return true
+		case .deviceTag:
+			return false
+		case .chatLoad:
+			return false
+		case .chatSave:
+			return true
+		case .profileUpload:
+			return true
+		case .profileDownload:
+			return false
+		case .profileUpdateText:
+			return true
+		case .profileGetText:
+			return false
+		case .profileGetFullName:
+			return false
+		case .profileBill:
+			return true
 		}
 	}
 }
 
 public struct QBiqSearchResult: Codable {
-  public let id: String
-  public let name: String
+	public let id: String
+	public let name: String
 }
 
 public struct Receipt: Codable {
-  public let product_id: String
-  public let purchase_date_ms: String
-  public let expires_date_ms: String
-
-  private func getTimeStamp(_ value: String) -> Int {
-    return Int((TimeInterval(purchase_date_ms) ?? 0) / 1000)
-  }
-  public var timestampPurchase: Int {
-    return getTimeStamp(purchase_date_ms)
-  }
-
-  public var timestampExpiration: Int {
-    return getTimeStamp(expires_date_ms)
-  }
+	public let product_id: String
+	public let purchase_date_ms: String
+	public let expires_date_ms: String
+	
+	private func getTimeStamp(_ value: String) -> Int {
+		return Int((TimeInterval(purchase_date_ms) ?? 0) / 1000)
+	}
+	public var timestampPurchase: Int {
+		return getTimeStamp(purchase_date_ms)
+	}
+	
+	public var timestampExpiration: Int {
+		return getTimeStamp(expires_date_ms)
+	}
 }
 
 public struct QBiqStat: Codable {
-  public let owned: Int
-  public let followed: Int
-  public let following: Int
+	public let owned: Int
+	public let followed: Int
+	public let following: Int
 }
 
 public struct QBiqProfile: Codable {
-  public let id: DeviceURN
-  public let description: String
-  public let tags: [String]
-  public init(_ devId: DeviceURN, _ summary: String, labels: [String]) {
-    id = devId
-    description = summary
-    tags = labels
-  }
+	public let id: DeviceURN
+	public let description: String
+	public let tags: [String]
+	public init(_ devId: DeviceURN, _ summary: String, labels: [String]) {
+		id = devId
+		description = summary
+		tags = labels
+	}
 }
 
 public struct QBiqTagSearchResult: Codable {
-  public let id: String
-  public let name: String
-  public let description: String
-  public let tags: [String]
+	public let id: String
+	public let name: String
+	public let description: String
+	public let tags: [String]
 }
 
 public struct QBiqLocationUpdate: Codable {
-  public var id: DeviceURN = ""
-  public var x: Double = 0
-  public var y: Double = 0
-  public init() { }
+	public var id: DeviceURN = ""
+	public var x: Double = 0
+	public var y: Double = 0
+	public init() { }
 }
 
 public struct MovementSummary: Codable {
-  public var unitid = 0
-  public var moves = 0
+	public var unitid = 0
+	public var moves = 0
 }
 
 public struct ChatLogCreation: Codable {
-  public let topic: String
-  public let content: String
+	public let topic: String
+	public let content: String
 }
 
 public struct ChatLog: Codable {
-  public let id: Int64
-  public let utc: String
-  public let topic: String
-  public let poster: String
-  public let content: String
+	public let id: Int64
+	public let utc: String
+	public let topic: String
+	public let poster: String
+	public let content: String
 }
 
 public struct ChatLogQuery: Codable {
-  public let last: Int64
+	public let last: Int64
 }
 
 public struct ProfileAPIResponse: Codable {
-  public var content = ""
+	public var content = ""
 }
 
 public struct ProfileAPIRequest: Codable {
-  public var uid = ""
+	public var uid = ""
 }
 
 extension APIResponse where T: Decodable {
@@ -230,8 +230,8 @@ extension APIResponse where T: Decodable {
 }
 
 private func sendRequest<T>(endpoint: APIEndpoint,
-						 parameters: RequestParameters<T>,
-						 callback: @escaping (APIResponse<Data>) -> ()) {
+							parameters: RequestParameters<T>,
+							callback: @escaping (APIResponse<Data>) -> ()) {
 	let url = parameters.complete(url: endpoint.url)
 	guard let session = Authentication.shared?.token else {
 		return callback(APIResponse {throw Authentication.Error("No user token.")})
@@ -322,135 +322,135 @@ public extension DeviceAPI {
 			callback(APIResponse(from: $0))
 		}
 	}
-  /// Retrieve device summary of the indicated interval.
-  /// The response will be delivered to the provided callback.
-  static func deviceSummary(user: AuthenticatedUser,
-                                 deviceId: DeviceURN,
-                                 interval: DeviceAPI.ObsRequest.Interval, callback: @escaping (APIResponse<[MovementSummary]>) -> ()) {
-    let request = DeviceAPI.ObsRequest(deviceId: deviceId, interval: interval)
-    sendRequest(endpoint: .deviceSummary, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func deviceProfileUpdate(user: AuthenticatedUser,
-                                  profile: QBiqProfile,
-                                  callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
-    sendRequest(endpoint: .deviceProfileUpdate, parameters: RequestParameters(body: profile)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func deviceProfileGet(user: AuthenticatedUser, uid: String,
-                               callback: @escaping (APIResponse<QBiqProfile>) -> ()) {
-    let request = ProfileAPIRequest.init(uid: uid)
-    sendRequest(endpoint: .deviceProfileGet, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func deviceLocation(user: AuthenticatedUser, location: QBiqLocationUpdate,
-                             callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
-    sendRequest(endpoint: .deviceLocation, parameters: RequestParameters(body: location)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func deviceFollowers(user: AuthenticatedUser, deviceId: DeviceURN,
-                              callback: @escaping (APIResponse<[String]>) -> ()) {
-    let req = RequestParameters<String>(rawString: deviceId)
-    sendRequest(endpoint: .deviceFollowers, parameters: req) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func deviceTag(user: AuthenticatedUser, tag: String,
-                        callback: @escaping (APIResponse<[QBiqTagSearchResult]>) -> ()) {
-    struct SimpleRequest: Codable {
-      let with: String
-    }
-    let request = SimpleRequest.init(with: tag)
-    sendRequest(endpoint: .deviceTag, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func chatLoad(user: AuthenticatedUser,
-                       checkpoint: Int64,
-                       callback: @escaping (APIResponse<[ChatLog]>) -> ()) {
-    let request = ChatLogQuery.init(last: checkpoint)
-    sendRequest(endpoint: .chatLoad, parameters: RequestParameters(body: request)){
-      callback(APIResponse(from : $0))
-    }
-  }
-
-  static func chatSave(user: AuthenticatedUser,
-                       deviceId: DeviceURN,
-                       message: String,
-                       callback: @escaping (APIResponse<Int>) -> ()) {
-    let request = ChatLogCreation.init(topic: deviceId, content: message)
-    sendRequest(endpoint: .chatSave, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func profileUpload(user: AuthenticatedUser, payload: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
-    let request = ProfileAPIResponse.init(content: payload)
-    sendRequest(endpoint: .profileUpload, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func profileDownload(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
-    let request = ProfileAPIRequest.init(uid: uid)
-    sendRequest(endpoint: .profileDownload, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func profileUpdateText(user: AuthenticatedUser, payload: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
-    let request = ProfileAPIResponse.init(content: payload)
-    sendRequest(endpoint: .profileUpdateText, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func profileGetText(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
-    let request = ProfileAPIRequest.init(uid: uid)
-    sendRequest(endpoint: .profileGetText, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func profileGetFullName(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
-    let request = ProfileAPIRequest.init(uid: uid)
-    sendRequest(endpoint: .profileGetFullName, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func profileValidateBill(user: AuthenticatedUser, receipt: Data, callback: @escaping (APIResponse<[Receipt]>) -> ()) {
-    let postbody = receipt.base64EncodedString()
-    sendRequest(endpoint: .profileBill, parameters: RequestParameters<String>(rawString: postbody)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func deviceStat(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<QBiqStat>) -> ()) {
-    let request = ProfileAPIRequest.init(uid: uid)
-    sendRequest(endpoint: .deviceStat, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-  static func deviceSearch(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<[QBiqSearchResult]>) -> ()) {
-    let request = ProfileAPIRequest.init(uid: uid)
-    sendRequest(endpoint: .deviceSearch, parameters: RequestParameters(body: request)) {
-      callback(APIResponse(from: $0))
-    }
-  }
-
-
+	/// Retrieve device summary of the indicated interval.
+	/// The response will be delivered to the provided callback.
+	static func deviceSummary(user: AuthenticatedUser,
+							  deviceId: DeviceURN,
+							  interval: DeviceAPI.ObsRequest.Interval, callback: @escaping (APIResponse<[MovementSummary]>) -> ()) {
+		let request = DeviceAPI.ObsRequest(deviceId: deviceId, interval: interval)
+		sendRequest(endpoint: .deviceSummary, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func deviceProfileUpdate(user: AuthenticatedUser,
+									profile: QBiqProfile,
+									callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceProfileUpdate, parameters: RequestParameters(body: profile)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func deviceProfileGet(user: AuthenticatedUser, uid: String,
+								 callback: @escaping (APIResponse<QBiqProfile>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .deviceProfileGet, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func deviceLocation(user: AuthenticatedUser, location: QBiqLocationUpdate,
+							   callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceLocation, parameters: RequestParameters(body: location)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func deviceFollowers(user: AuthenticatedUser, deviceId: DeviceURN,
+								callback: @escaping (APIResponse<[String]>) -> ()) {
+		let req = RequestParameters<String>(rawString: deviceId)
+		sendRequest(endpoint: .deviceFollowers, parameters: req) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func deviceTag(user: AuthenticatedUser, tag: String,
+						  callback: @escaping (APIResponse<[QBiqTagSearchResult]>) -> ()) {
+		struct SimpleRequest: Codable {
+			let with: String
+		}
+		let request = SimpleRequest.init(with: tag)
+		sendRequest(endpoint: .deviceTag, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func chatLoad(user: AuthenticatedUser,
+						 checkpoint: Int64,
+						 callback: @escaping (APIResponse<[ChatLog]>) -> ()) {
+		let request = ChatLogQuery.init(last: checkpoint)
+		sendRequest(endpoint: .chatLoad, parameters: RequestParameters(body: request)){
+			callback(APIResponse(from : $0))
+		}
+	}
+	
+	static func chatSave(user: AuthenticatedUser,
+						 deviceId: DeviceURN,
+						 message: String,
+						 callback: @escaping (APIResponse<Int>) -> ()) {
+		let request = ChatLogCreation.init(topic: deviceId, content: message)
+		sendRequest(endpoint: .chatSave, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func profileUpload(user: AuthenticatedUser, payload: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIResponse.init(content: payload)
+		sendRequest(endpoint: .profileUpload, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func profileDownload(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .profileDownload, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func profileUpdateText(user: AuthenticatedUser, payload: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIResponse.init(content: payload)
+		sendRequest(endpoint: .profileUpdateText, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func profileGetText(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .profileGetText, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func profileGetFullName(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .profileGetFullName, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func profileValidateBill(user: AuthenticatedUser, receipt: Data, callback: @escaping (APIResponse<[Receipt]>) -> ()) {
+		let postbody = receipt.base64EncodedString()
+		sendRequest(endpoint: .profileBill, parameters: RequestParameters<String>(rawString: postbody)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func deviceStat(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<QBiqStat>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .deviceStat, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	static func deviceSearch(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<[QBiqSearchResult]>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .deviceSearch, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
+	
 	/// Delete all device observations.
 	/// This will fail if the current user is not the device's owner.
 	/// The response will be delivered to the provided callback.
