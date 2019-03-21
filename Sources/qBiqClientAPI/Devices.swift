@@ -50,6 +50,7 @@ enum APIEndpoint: String {
   case deviceLocation = "/device/location"
   case deviceFollowers = "/device/followers"
   case deviceTag = "/device/tag"
+	case deviceType = "/device/type"
 
   case chatLoad = "/chat/load"
   case chatSave = "/chat/save"
@@ -118,6 +119,8 @@ enum APIEndpoint: String {
       return true
     case .deviceTag:
       return false
+		case .deviceType:
+			return false
     case .chatLoad:
       return false
     case .chatSave:
@@ -375,6 +378,17 @@ public extension DeviceAPI {
     }
   }
 
+	static func deviceType(user: AuthenticatedUser, deviceId: DeviceURN, enableMovementFeature: Bool,
+												 callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		struct DeviceTypeSettings: Codable {
+			let id: String
+			let move: Int
+		}
+		let setting = DeviceTypeSettings.init(id: deviceId, move: enableMovementFeature ? 1 : 0)
+		sendRequest(endpoint: .deviceType, parameters: RequestParameters(body: setting)) {
+			callback(APIResponse(from: $0))
+		}
+	}
   static func chatLoad(user: AuthenticatedUser,
                        checkpoint: Int64,
                        callback: @escaping (APIResponse<[ChatLog]>) -> ()) {
