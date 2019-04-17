@@ -51,6 +51,7 @@ enum APIEndpoint: String {
   case deviceFollowers = "/device/followers"
   case deviceTag = "/device/tag"
 	case deviceType = "/device/type"
+	case deviceBookmark = "/device/bookmark"
 
   case chatLoad = "/chat/load"
   case chatSave = "/chat/save"
@@ -121,6 +122,8 @@ enum APIEndpoint: String {
       return false
 		case .deviceType:
 			return false
+		case .deviceBookmark:
+			return true
     case .chatLoad:
       return false
     case .chatSave:
@@ -138,6 +141,19 @@ enum APIEndpoint: String {
     case .profileBill:
       return true
 		}
+	}
+}
+
+/// History Record data control
+public struct BiqBookmark: Codable, IdHashable {
+	/// The permanent unique id for this qBiq device.
+	public let id: DeviceURN
+	/// The bookmark point
+	public let timestamp: Double
+	/// Init a new BiqBookmark struct.
+	public init(id i: DeviceURN, timestamp t: Double) {
+		id = i
+		timestamp = t
 	}
 }
 
@@ -389,6 +405,14 @@ public extension DeviceAPI {
 			callback(APIResponse(from: $0))
 		}
 	}
+
+	static func setBookmark(user: AuthenticatedUser, bookmark: BiqBookmark,
+												 callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceBookmark, parameters: RequestParameters(body: bookmark)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+	
   static func chatLoad(user: AuthenticatedUser,
                        checkpoint: Int64,
                        callback: @escaping (APIResponse<[ChatLog]>) -> ()) {
