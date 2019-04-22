@@ -52,6 +52,7 @@ enum APIEndpoint: String {
   case deviceTag = "/device/tag"
 	case deviceType = "/device/type"
 	case deviceBookmark = "/device/bookmark"
+	case deviceFirmware = "/device/firmware"
 
   case chatLoad = "/chat/load"
   case chatSave = "/chat/save"
@@ -124,6 +125,8 @@ enum APIEndpoint: String {
 			return false
 		case .deviceBookmark:
 			return true
+		case .deviceFirmware:
+			return false
     case .chatLoad:
       return false
     case .chatSave:
@@ -412,7 +415,14 @@ public extension DeviceAPI {
 			callback(APIResponse(from: $0))
 		}
 	}
-	
+
+	static func deviceFirmware(user: AuthenticatedUser,
+														 callback: @escaping (APIResponse<[BiqDeviceFirmware]>) -> ()) {
+		sendRequest(endpoint: .deviceFirmware) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
   static func chatLoad(user: AuthenticatedUser,
                        checkpoint: Int64,
                        callback: @escaping (APIResponse<[ChatLog]>) -> ()) {
