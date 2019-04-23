@@ -163,6 +163,10 @@ public struct BiqBookmark: Codable, IdHashable {
 public struct QBiqSearchResult: Codable {
   public let id: String
   public let name: String
+	public init(id i: String, name n: String) {
+		id = i
+		name = n
+	}
 }
 
 public struct Receipt: Codable {
@@ -180,12 +184,23 @@ public struct Receipt: Codable {
   public var timestampExpiration: Int {
     return getTimeStamp(expires_date_ms)
   }
+
+	public init(product_id id: String, purchase_date_ms p: String, expires_date_ms e: String) {
+		product_id = id
+		purchase_date_ms = p
+		expires_date_ms = e
+	}
 }
 
 public struct QBiqStat: Codable {
   public let owned: Int
   public let followed: Int
   public let following: Int
+	public init(owned o: Int, followed fd: Int, following fg: Int) {
+		owned = o
+		followed = fd
+		following = fg
+	}
 }
 
 public struct QBiqProfile: Codable {
@@ -204,6 +219,12 @@ public struct QBiqTagSearchResult: Codable {
   public let name: String
   public let description: String
   public let tags: [String]
+	public init(id i: String, name n: String, description d: String, tags t:[String]) {
+		id = i
+		name = n
+		description = d
+		tags = t
+	}
 }
 
 public struct QBiqLocationUpdate: Codable {
@@ -229,10 +250,20 @@ public struct ChatLog: Codable {
   public let topic: String
   public let poster: String
   public let content: String
+	public init(id i: Int64, utc u: String, topic t: String, poster p: String, content c: String) {
+		id = i
+		utc = u
+		topic = t
+		poster = p
+		content = c
+	}
 }
 
 public struct ChatLogQuery: Codable {
   public let last: Int64
+	public init(last l: Int64) {
+		last = l
+	}
 }
 
 public struct ProfileAPIResponse: Codable {
