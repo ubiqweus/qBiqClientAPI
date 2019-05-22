@@ -43,7 +43,7 @@ public struct APIRequest {
 							parameters: RequestParameters<T>,
 							callback: @escaping (APIResponse<Data>) -> ()) {
 	#if DEBUG
-		//print("API request: " + url.absoluteString)
+		print("API request: " + url.absoluteString)
 	#endif
 		let session = URLSession.shared
 		let request: NSMutableURLRequest
@@ -79,7 +79,7 @@ public struct APIRequest {
 				return callback(APIResponse {throw Authentication.Error("Server returned no data.")})
 			}
 		#if DEBUG
-			//print("API: \(url.absoluteString) status: \(response.statusCode) data size: \(data?.count ?? 0)")//"\ndata: " + (String(data: d, encoding: .utf8) ?? "no data"))//" token: \(sessionInfo?.token ?? "")")
+			print("API: \(url.absoluteString) status: \(response.statusCode) data size: \(data?.count ?? 0)")//"\ndata: " + (String(data: d, encoding: .utf8) ?? "no data"))//" token: \(sessionInfo?.token ?? "")")
 		#endif
 			guard response.statusCode == 200 else {
 				if let error = try? JSONDecoder().decode(APIRequest.Error.self, from: d) {

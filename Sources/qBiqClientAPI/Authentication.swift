@@ -60,13 +60,13 @@ struct RequestParameters<Body: Encodable> {
 	typealias NameValuePair = (name: String, value: String)
 	let body: Body
 	let paths: [String]
-  var _rawString: String? = nil
+	var _rawString: String? = nil
 
-  init(rawString: String) {
-    _rawString = rawString
-    body = rawString as! Body
-    paths = []
-  }
+	init(rawString: String) {
+		_rawString = rawString
+		body = rawString as! Body
+		paths = []
+	}
 
 	init(body b: Body, paths p: [String] = []) {
     _rawString = nil
@@ -85,9 +85,9 @@ struct RequestParameters<Body: Encodable> {
 	}
 	
 	var jsonEncoded: String {
-    if let raw = _rawString {
-      return raw
-    }
+		if let raw = _rawString {
+			return raw
+		}
 		guard let data = try? JSONEncoder().encode(body),
 				let s = String(data: data, encoding: .utf8) else {
 			return "{}"
