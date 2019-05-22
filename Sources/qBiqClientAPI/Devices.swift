@@ -50,6 +50,9 @@ enum APIEndpoint: String {
   case deviceLocation = "/device/location"
   case deviceFollowers = "/device/followers"
   case deviceTag = "/device/tag"
+	case deviceTagGet = "/device/tag/get"
+	case deviceTagDel = "/device/tag/del"
+	case deviceTagAdd = "/device/tag/add"
 	case deviceType = "/device/type"
 	case deviceBookmark = "/device/bookmark"
 	case deviceFirmware = "/device/firmware"
@@ -63,6 +66,20 @@ enum APIEndpoint: String {
   case profileGetText = "/profile/get"
   case profileGetFullName = "/profile/name"
   case profileBill = "/profile/bill"
+
+	case recipeGet = "/recipe/get"
+	case recipeDel = "/recipe/del"
+	case recipeSet = "/recipe/set"
+	case recipeTagAdd = "/recipe/tag/add"
+	case recipeTagDel = "/recipe/tag/del"
+	case recipeTagGet = "/recipe/tag/get"
+	case recipeMediaAdd = "/recipe/media/add"
+	case recipeMediaDel = "/recipe/media/del"
+	case recipeMediaGet = "/recipe/media/get"
+	case recipeThresholdAdd = "/recipe/threshold/add"
+	case recipeThresholdDel = "/recipe/threshold/del"
+	case recipeThresholdGet = "/recipe/threshold/get"
+	case recipeSearch = "/recipe/search"
 
 	var url: URL {
 		return URL(string: "\(apiServerBaseURL)/\(apiVersion)\(rawValue)")!
@@ -121,6 +138,12 @@ enum APIEndpoint: String {
       return true
     case .deviceTag:
       return false
+		case .deviceTagGet:
+			return false
+		case .deviceTagAdd:
+			return true
+		case .deviceTagDel:
+			return true
 		case .deviceType:
 			return false
 		case .deviceBookmark:
@@ -143,29 +166,33 @@ enum APIEndpoint: String {
       return false
     case .profileBill:
       return true
+		case .recipeGet:
+			return false
+		case .recipeDel:
+			return false
+		case .recipeSet:
+			return true
+		case .recipeTagAdd:
+			return true
+		case .recipeTagDel:
+			return true
+		case .recipeTagGet:
+			return false
+		case .recipeMediaAdd:
+			return true
+		case .recipeMediaDel:
+			return true
+		case .recipeMediaGet:
+			return false
+		case .recipeThresholdAdd:
+			return true
+		case .recipeThresholdDel:
+			return true
+		case .recipeThresholdGet:
+			return false
+		case .recipeSearch:
+			return false
 		}
-	}
-}
-
-/// History Record data control
-public struct BiqBookmark: Codable, IdHashable {
-	/// The permanent unique id for this qBiq device.
-	public let id: DeviceURN
-	/// The bookmark point
-	public let timestamp: Double
-	/// Init a new BiqBookmark struct.
-	public init(id i: DeviceURN, timestamp t: Double) {
-		id = i
-		timestamp = t
-	}
-}
-
-public struct QBiqSearchResult: Codable {
-  public let id: String
-  public let name: String
-	public init(id i: String, name n: String) {
-		id = i
-		name = n
 	}
 }
 
@@ -192,71 +219,9 @@ public struct Receipt: Codable {
 	}
 }
 
-public struct QBiqStat: Codable {
-  public let owned: Int
-  public let followed: Int
-  public let following: Int
-	public init(owned o: Int, followed fd: Int, following fg: Int) {
-		owned = o
-		followed = fd
-		following = fg
-	}
-}
-
-public struct QBiqProfile: Codable {
-  public let id: DeviceURN
-  public let description: String
-  public let tags: [String]
-  public init(_ devId: DeviceURN, _ summary: String, labels: [String]) {
-    id = devId
-    description = summary
-    tags = labels
-  }
-}
-
-public struct QBiqTagSearchResult: Codable {
-  public let id: String
-  public let name: String
-  public let description: String
-  public let tags: [String]
-	public init(id i: String, name n: String, description d: String, tags t:[String]) {
-		id = i
-		name = n
-		description = d
-		tags = t
-	}
-}
-
-public struct QBiqLocationUpdate: Codable {
-  public var id: DeviceURN = ""
-  public var x: Double = 0
-  public var y: Double = 0
-  public init() { }
-}
-
 public struct MovementSummary: Codable {
   public var unitid = 0
   public var moves = 0
-}
-
-public struct ChatLogCreation: Codable {
-  public let topic: String
-  public let content: String
-}
-
-public struct ChatLog: Codable {
-  public let id: Int64
-  public let utc: String
-  public let topic: String
-  public let poster: String
-  public let content: String
-	public init(id i: Int64, utc u: String, topic t: String, poster p: String, content c: String) {
-		id = i
-		utc = u
-		topic = t
-		poster = p
-		content = c
-	}
 }
 
 public struct ChatLogQuery: Codable {
@@ -266,13 +231,15 @@ public struct ChatLogQuery: Codable {
 	}
 }
 
-public struct ProfileAPIResponse: Codable {
-  public var content = ""
-}
-
 public struct ProfileAPIRequest: Codable {
   public var uid = ""
 }
+
+public struct RecipeAPIRequest: Codable {
+	public var uri = ""
+}
+
+public typealias RecipeAPIResponse = ProfileAPIResponse
 
 extension APIResponse where T: Decodable {
 	init(from: APIResponse<Data>) {
@@ -387,7 +354,7 @@ public extension DeviceAPI {
   }
 
   static func deviceProfileUpdate(user: AuthenticatedUser,
-                                  profile: QBiqProfile,
+                                  profile: BiqProfile,
                                   callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
     sendRequest(endpoint: .deviceProfileUpdate, parameters: RequestParameters(body: profile)) {
       callback(APIResponse(from: $0))
@@ -395,14 +362,14 @@ public extension DeviceAPI {
   }
 
   static func deviceProfileGet(user: AuthenticatedUser, uid: String,
-                               callback: @escaping (APIResponse<QBiqProfile>) -> ()) {
+                               callback: @escaping (APIResponse<BiqProfile>) -> ()) {
     let request = ProfileAPIRequest.init(uid: uid)
     sendRequest(endpoint: .deviceProfileGet, parameters: RequestParameters(body: request)) {
       callback(APIResponse(from: $0))
     }
   }
 
-  static func deviceLocation(user: AuthenticatedUser, location: QBiqLocationUpdate,
+  static func deviceLocation(user: AuthenticatedUser, location: BiqLocation,
                              callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
     sendRequest(endpoint: .deviceLocation, parameters: RequestParameters(body: location)) {
       callback(APIResponse(from: $0))
@@ -418,7 +385,7 @@ public extension DeviceAPI {
   }
 
   static func deviceTag(user: AuthenticatedUser, tag: String,
-                        callback: @escaping (APIResponse<[QBiqTagSearchResult]>) -> ()) {
+                        callback: @escaping (APIResponse<[BiqDevice]>) -> ()) {
     struct SimpleRequest: Codable {
       let with: String
     }
@@ -427,6 +394,28 @@ public extension DeviceAPI {
       callback(APIResponse(from: $0))
     }
   }
+
+	static func deviceTagGet(user: AuthenticatedUser, uid: String,
+													 callback: @escaping (APIResponse<[BiqProfileTag]>) -> ()) {
+		let request = ProfileAPIRequest(uid: uid)
+		sendRequest(endpoint: .deviceTagGet, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceTagAdd(user: AuthenticatedUser, tags: [BiqProfileTag],
+													 callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceTagAdd, parameters: RequestParameters(body: tags)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceTagDel(user: AuthenticatedUser, tags: [BiqProfileTag],
+													 callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceTagDel, parameters: RequestParameters(body: tags)) {
+			callback(APIResponse(from: $0))
+		}
+	}
 
 	static func deviceType(user: AuthenticatedUser, deviceId: DeviceURN, enableMovementFeature: Bool,
 												 callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
@@ -515,14 +504,14 @@ public extension DeviceAPI {
     }
   }
 
-  static func deviceStat(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<QBiqStat>) -> ()) {
+  static func deviceStat(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<BiqStat>) -> ()) {
     let request = ProfileAPIRequest.init(uid: uid)
     sendRequest(endpoint: .deviceStat, parameters: RequestParameters(body: request)) {
       callback(APIResponse(from: $0))
     }
   }
 
-  static func deviceSearch(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<[QBiqSearchResult]>) -> ()) {
+  static func deviceSearch(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<[BiqDevice]>) -> ()) {
     let request = ProfileAPIRequest.init(uid: uid)
     sendRequest(endpoint: .deviceSearch, parameters: RequestParameters(body: request)) {
       callback(APIResponse(from: $0))
@@ -555,6 +544,83 @@ public extension DeviceAPI {
 	static func setDeviceLimits(user: AuthenticatedUser, deviceId: DeviceURN, newLimits: [DeviceLimit], callback: @escaping (APIResponse<DeviceLimitsResponse>) -> ()) {
 		let request = DeviceAPI.UpdateLimitsRequest(deviceId: deviceId, limits: newLimits)
 		sendRequest(endpoint: .deviceSetLimits, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeGet(user: AuthenticatedUser, uri: String, callback: @escaping (APIResponse<BiqRecipe>) -> ()) {
+		let request = RecipeAPIRequest(uri: uri)
+		sendRequest(endpoint: .recipeGet, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeDel(user: AuthenticatedUser, uri: String, callback: @escaping (APIResponse<BiqRecipe>) -> ()) {
+		let request = RecipeAPIRequest(uri: uri)
+		sendRequest(endpoint: .recipeDel, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeSet(user: AuthenticatedUser, recipe: BiqRecipe, callback: @escaping (APIResponse<RecipeAPIResponse>) -> ()) {
+		sendRequest(endpoint: .recipeSet, parameters: RequestParameters(body: recipe)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeTagGet(user: AuthenticatedUser, uri: String, callback: @escaping(APIResponse<[BiqRecipeTag]>) -> ()) {
+		let request = RecipeAPIRequest(uri: uri)
+		sendRequest(endpoint: .recipeTagGet, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeTagAdd(user: AuthenticatedUser, tags: [BiqRecipeTag], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
+		sendRequest(endpoint: .recipeTagAdd, parameters: RequestParameters(body: tags)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeTagDel(user: AuthenticatedUser, tags: [BiqRecipeTag], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
+		sendRequest(endpoint: .recipeTagDel, parameters: RequestParameters(body: tags)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeMediaGet(user: AuthenticatedUser, uri: String, callback: @escaping(APIResponse<[BiqRecipeMedia]>) -> ()) {
+		let request = RecipeAPIRequest(uri: uri)
+		sendRequest(endpoint: .recipeMediaGet, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeMediaAdd(user: AuthenticatedUser, tags: [BiqRecipeMedia], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
+		sendRequest(endpoint: .recipeMediaAdd, parameters: RequestParameters(body: tags)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeMediaDel(user: AuthenticatedUser, tags: [BiqRecipeMedia], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
+		sendRequest(endpoint: .recipeMediaDel, parameters: RequestParameters(body: tags)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeThresholdGet(user: AuthenticatedUser, uri: String, callback: @escaping(APIResponse<[BiqThreshold]>) -> ()) {
+		let request = RecipeAPIRequest(uri: uri)
+		sendRequest(endpoint: .recipeThresholdGet, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeThresholdAdd(user: AuthenticatedUser, tags: [BiqThreshold], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
+		sendRequest(endpoint: .recipeThresholdAdd, parameters: RequestParameters(body: tags)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeThresholdDel(user: AuthenticatedUser, tags: [BiqThreshold], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
+		sendRequest(endpoint: .recipeThresholdDel, parameters: RequestParameters(body: tags)) {
 			callback(APIResponse(from: $0))
 		}
 	}
