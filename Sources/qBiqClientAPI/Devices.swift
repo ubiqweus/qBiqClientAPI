@@ -11,11 +11,11 @@ import SwiftCodables
 import SAuthCodables
 
 #if false//DEBUG // this
-#if TARGET_IPHONE_SIMULATOR
+	#if TARGET_IPHONE_SIMULATOR
 let apiServerBaseURL = "http://localhost:8080"
-#else
+	#else
 let apiServerBaseURL = "http://10.10.1.134:8080"//"http://192.168.0.26:8080"
-#endif
+	#endif
 #else
 let apiServerBaseURL = "https://api.ubiqweus.com"
 #endif
