@@ -67,18 +67,6 @@ enum APIEndpoint: String {
 	case profileGetFullName = "/profile/name"
 	case profileBill = "/profile/bill"
 
-	case recipeGet = "/recipe/get"
-	case recipeDel = "/recipe/del"
-	case recipeSet = "/recipe/set"
-	case recipeTagAdd = "/recipe/tag/add"
-	case recipeTagDel = "/recipe/tag/del"
-	case recipeTagGet = "/recipe/tag/get"
-	case recipeMediaAdd = "/recipe/media/add"
-	case recipeMediaDel = "/recipe/media/del"
-	case recipeMediaGet = "/recipe/media/get"
-	case recipeThresholdAdd = "/recipe/threshold/add"
-	case recipeThresholdDel = "/recipe/threshold/del"
-	case recipeThresholdGet = "/recipe/threshold/get"
 	case recipeSearch = "/recipe/search"
 
 	var url: URL {
@@ -166,33 +154,80 @@ enum APIEndpoint: String {
 			return false
 		case .profileBill:
 			return true
-		case .recipeGet:
-			return false
-		case .recipeDel:
-			return false
-		case .recipeSet:
-			return true
-		case .recipeTagAdd:
-			return true
-		case .recipeTagDel:
-			return true
-		case .recipeTagGet:
-			return false
-		case .recipeMediaAdd:
-			return true
-		case .recipeMediaDel:
-			return true
-		case .recipeMediaGet:
-			return false
-		case .recipeThresholdAdd:
-			return true
-		case .recipeThresholdDel:
-			return true
-		case .recipeThresholdGet:
-			return false
 		case .recipeSearch:
 			return false
 		}
+	}
+}
+
+public struct RecipeLimit: Codable {
+	public let low: Int
+	public let high: Int
+	public let enabled: Bool
+	public init(low lo: Int, high hi: Int, enabled en: Bool) {
+		low = lo; high = hi; enabled = en
+	}
+}
+
+public struct RecipeMovement: Codable {
+	public let blink: Bool
+	public let counter: Int
+	public let delay: Int
+	public let enabled: Bool
+	public let sensitivity: Int
+	public init(sensitivity sens: Int, counter cnt: Int, delay dly: Int,
+							blink blk: Bool, enabled en: Bool) {
+		sensitivity = sens; counter = cnt; delay = dly; blink = blk; enabled = en
+	}
+}
+
+public struct RecipeConfiguration: Codable {
+	public let interval: Int
+	public let sample: Int
+	public let notifications: Int
+	public let tmp: RecipeLimit?
+	public let rh: RecipeLimit?
+	public let bri: RecipeLimit?
+	public let mov: RecipeMovement?
+	public init(interval int: Int, sample sam: Int, notifications note: Int,
+							tmp temperature: RecipeLimit? = nil, rh humidity: RecipeLimit? = nil,
+							bri brightness: RecipeLimit? = nil, mov movement: RecipeMovement? = nil) {
+		interval = int; sample = sam; notifications = note
+		tmp = temperature; rh = humidity; bri = brightness; mov = movement
+	}
+}
+public struct Recipe: Codable, CustomStringConvertible {
+	public let title: String
+	public let company: String
+	public let createdAt: String
+	public let lastUpdate: String
+	public let subtitle: String
+	public let website: String
+	public let companyWebsite: String
+	public let companyLogo: String
+	public let logo: String
+	public let description: String
+	public var stars: Int
+	public let tags: [String]?
+	public let comments: String?
+	public let payload: String?
+	public init(title t: String, company c: String,
+							createdAt cra: String, lastUpdate last: String, subtitle sub: String,
+							website web: String, companyWebsite cweb: String,
+							companyLogo clogo: String, logo mylogo: String,
+							description des: String, stars sta: Int,
+							tags tg:[String]? = nil, comments cmt: String? = nil,
+							payload paid: String? = nil) {
+		title = t; company = c; createdAt = cra; lastUpdate = last;
+		subtitle = sub; website = web; companyWebsite = cweb;
+		companyLogo = clogo; logo = mylogo; description = des;
+		stars = sta; tags = tg; comments = cmt; payload = paid
+	}
+	public var configuration: RecipeConfiguration? {
+		guard let paid = payload else { return nil }
+		let bytes:[UInt8] = paid.utf8.map { $0 }
+		let data = Data(bytes: bytes)
+		return try? JSONDecoder().decode(RecipeConfiguration.self, from: data)
 	}
 }
 
@@ -548,79 +583,17 @@ public extension DeviceAPI {
 		}
 	}
 
-	static func recipeGet(user: AuthenticatedUser, uri: String, callback: @escaping (APIResponse<BiqRecipe>) -> ()) {
-		let request = RecipeAPIRequest(uri: uri)
-		sendRequest(endpoint: .recipeGet, parameters: RequestParameters(body: request)) {
-			callback(APIResponse(from: $0))
+	static func recipeSearch(user: AuthenticatedUser, keywords: String? = nil, page: Int, size: Int, callback: @escaping (APIResponse<[Recipe]>) -> ()) {
+		struct RecipeSearchRequest: Codable {
+			public let keywords: String?
+			public let page: Int
+			public let size: Int
+			public init(keywords kw: String? = nil, page pg: Int, size sz: Int) {
+				keywords = kw; page = pg >= 0 ? pg : 0; size = sz > 0 && sz <= 100 ? sz : 50
+			}
 		}
-	}
-
-	static func recipeDel(user: AuthenticatedUser, uri: String, callback: @escaping (APIResponse<BiqRecipe>) -> ()) {
-		let request = RecipeAPIRequest(uri: uri)
-		sendRequest(endpoint: .recipeDel, parameters: RequestParameters(body: request)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeSet(user: AuthenticatedUser, recipe: BiqRecipe, callback: @escaping (APIResponse<RecipeAPIResponse>) -> ()) {
-		sendRequest(endpoint: .recipeSet, parameters: RequestParameters(body: recipe)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeTagGet(user: AuthenticatedUser, uri: String, callback: @escaping(APIResponse<[BiqRecipeTag]>) -> ()) {
-		let request = RecipeAPIRequest(uri: uri)
-		sendRequest(endpoint: .recipeTagGet, parameters: RequestParameters(body: request)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeTagAdd(user: AuthenticatedUser, tags: [BiqRecipeTag], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
-		sendRequest(endpoint: .recipeTagAdd, parameters: RequestParameters(body: tags)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeTagDel(user: AuthenticatedUser, tags: [BiqRecipeTag], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
-		sendRequest(endpoint: .recipeTagDel, parameters: RequestParameters(body: tags)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeMediaGet(user: AuthenticatedUser, uri: String, callback: @escaping(APIResponse<[BiqRecipeMedia]>) -> ()) {
-		let request = RecipeAPIRequest(uri: uri)
-		sendRequest(endpoint: .recipeMediaGet, parameters: RequestParameters(body: request)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeMediaAdd(user: AuthenticatedUser, tags: [BiqRecipeMedia], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
-		sendRequest(endpoint: .recipeMediaAdd, parameters: RequestParameters(body: tags)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeMediaDel(user: AuthenticatedUser, tags: [BiqRecipeMedia], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
-		sendRequest(endpoint: .recipeMediaDel, parameters: RequestParameters(body: tags)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeThresholdGet(user: AuthenticatedUser, uri: String, callback: @escaping(APIResponse<[BiqThreshold]>) -> ()) {
-		let request = RecipeAPIRequest(uri: uri)
-		sendRequest(endpoint: .recipeThresholdGet, parameters: RequestParameters(body: request)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeThresholdAdd(user: AuthenticatedUser, tags: [BiqThreshold], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
-		sendRequest(endpoint: .recipeThresholdAdd, parameters: RequestParameters(body: tags)) {
-			callback(APIResponse(from: $0))
-		}
-	}
-
-	static func recipeThresholdDel(user: AuthenticatedUser, tags: [BiqThreshold], callback: @escaping(APIResponse<RecipeAPIResponse>) -> ()) {
-		sendRequest(endpoint: .recipeThresholdDel, parameters: RequestParameters(body: tags)) {
+		let request = RecipeSearchRequest(keywords: keywords, page: page, size: size)
+		sendRequest(endpoint: .recipeSearch, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
