@@ -30,8 +30,10 @@ enum APIEndpoint: String {
 	case groupDeviceAdd = "/group/device/add"
 	case groupDeviceRemove = "/group/device/remove"
 	case groupDeviceList = "/group/device/list"
-	
+
+	case deviceSearch = "/device/search"
 	case deviceList = "/device/list"
+	case deviceStat = "/device/stat"
 	case deviceRegister = "/device/register"
 	case deviceUnregister = "/device/unregister"
 	case deviceInfo = "/device/info"
@@ -40,9 +42,33 @@ enum APIEndpoint: String {
 	case deviceUnshare = "/device/unshare"
 	case deviceUpdate = "/device/update"
 	case deviceObservations = "/device/obs"
+	case deviceSummary = "/device/sum"
 	case deviceDeleteObservations = "/device/obs/delete"
 	case deviceSetLimits = "/device/limits"
-	
+	case deviceProfileUpdate = "/device/profile/update"
+	case deviceProfileGet = "/device/profile/get"
+	case deviceLocation = "/device/location"
+	case deviceFollowers = "/device/followers"
+	case deviceTag = "/device/tag"
+	case deviceTagGet = "/device/tag/get"
+	case deviceTagDel = "/device/tag/del"
+	case deviceTagAdd = "/device/tag/add"
+	case deviceType = "/device/type"
+	case deviceBookmark = "/device/bookmark"
+	case deviceFirmware = "/device/firmware"
+
+	case chatLoad = "/chat/load"
+	case chatSave = "/chat/save"
+
+	case profileUpload = "/profile/upload"
+	case profileDownload = "/profile/download"
+	case profileUpdateText = "/profile/update"
+	case profileGetText = "/profile/get"
+	case profileGetFullName = "/profile/name"
+	case profileBill = "/profile/bill"
+
+	case recipeSearch = "/recipe/search"
+
 	var url: URL {
 		return URL(string: "\(apiServerBaseURL)/\(apiVersion)\(rawValue)")!
 	}
@@ -62,7 +88,11 @@ enum APIEndpoint: String {
 			return true
 		case .groupDeviceList:
 			return false
+		case .deviceSearch:
+			return false
 		case .deviceList:
+			return false
+		case .deviceStat:
 			return false
 		case .deviceRegister:
 			return true
@@ -71,6 +101,8 @@ enum APIEndpoint: String {
 		case .deviceUpdate:
 			return true
 		case .deviceObservations:
+			return false
+		case .deviceSummary:
 			return false
 		case .deviceShare:
 			return true
@@ -84,9 +116,165 @@ enum APIEndpoint: String {
 			return true
 		case .deviceShareToken:
 			return true
+		case .deviceProfileGet:
+			return false
+		case .deviceProfileUpdate:
+			return true
+		case .deviceLocation:
+			return true
+		case .deviceFollowers:
+			return true
+		case .deviceTag:
+			return false
+		case .deviceTagGet:
+			return false
+		case .deviceTagAdd:
+			return true
+		case .deviceTagDel:
+			return true
+		case .deviceType:
+			return false
+		case .deviceBookmark:
+			return true
+		case .deviceFirmware:
+			return false
+		case .chatLoad:
+			return false
+		case .chatSave:
+			return true
+		case .profileUpload:
+			return true
+		case .profileDownload:
+			return false
+		case .profileUpdateText:
+			return true
+		case .profileGetText:
+			return false
+		case .profileGetFullName:
+			return false
+		case .profileBill:
+			return true
+		case .recipeSearch:
+			return false
 		}
 	}
 }
+
+public struct RecipeLimit: Codable {
+	public let low: Int
+	public let high: Int
+	public let enabled: Bool
+	public init(low lo: Int, high hi: Int, enabled en: Bool) {
+		low = lo; high = hi; enabled = en
+	}
+}
+
+public struct RecipeMovement: Codable {
+	public let blink: Bool
+	public let counter: Int
+	public let delay: Int
+	public let enabled: Bool
+	public let sensitivity: Int
+	public init(sensitivity sens: Int, counter cnt: Int, delay dly: Int,
+							blink blk: Bool, enabled en: Bool) {
+		sensitivity = sens; counter = cnt; delay = dly; blink = blk; enabled = en
+	}
+}
+
+public struct RecipeConfiguration: Codable {
+	public let interval: Int
+	public let sample: Int
+	public let notifications: Int
+	public let tmp: RecipeLimit?
+	public let rh: RecipeLimit?
+	public let bri: RecipeLimit?
+	public let mov: RecipeMovement?
+	public init(interval int: Int, sample sam: Int, notifications note: Int,
+							tmp temperature: RecipeLimit? = nil, rh humidity: RecipeLimit? = nil,
+							bri brightness: RecipeLimit? = nil, mov movement: RecipeMovement? = nil) {
+		interval = int; sample = sam; notifications = note
+		tmp = temperature; rh = humidity; bri = brightness; mov = movement
+	}
+}
+public struct Recipe: Codable, CustomStringConvertible {
+	public let title: String
+	public let company: String
+	public let createdAt: String
+	public let lastUpdate: String
+	public let subtitle: String
+	public let website: String
+	public let companyWebsite: String
+	public let companyLogo: String
+	public let logo: String
+	public let description: String
+	public var stars: Int
+	public let tags: [String]?
+	public let comments: String?
+	public let payload: String?
+	public init(title t: String, company c: String,
+							createdAt cra: String, lastUpdate last: String, subtitle sub: String,
+							website web: String, companyWebsite cweb: String,
+							companyLogo clogo: String, logo mylogo: String,
+							description des: String, stars sta: Int,
+							tags tg:[String]? = nil, comments cmt: String? = nil,
+							payload paid: String? = nil) {
+		title = t; company = c; createdAt = cra; lastUpdate = last;
+		subtitle = sub; website = web; companyWebsite = cweb;
+		companyLogo = clogo; logo = mylogo; description = des;
+		stars = sta; tags = tg; comments = cmt; payload = paid
+	}
+	public var configuration: RecipeConfiguration? {
+		guard let paid = payload else { return nil }
+		let bytes:[UInt8] = paid.utf8.map { $0 }
+		let data = Data(bytes: bytes)
+		return try? JSONDecoder().decode(RecipeConfiguration.self, from: data)
+	}
+}
+
+public struct Receipt: Codable {
+	public let product_id: String
+	public let purchase_date_ms: String
+	public let expires_date_ms: String
+
+	private func getTimeStamp(_ value: String) -> Int {
+		return Int((TimeInterval(purchase_date_ms) ?? 0) / 1000)
+	}
+	public var timestampPurchase: Int {
+		return getTimeStamp(purchase_date_ms)
+	}
+
+	public var timestampExpiration: Int {
+		return getTimeStamp(expires_date_ms)
+	}
+
+	public init(product_id id: String, purchase_date_ms p: String, expires_date_ms e: String) {
+		product_id = id
+		purchase_date_ms = p
+		expires_date_ms = e
+	}
+}
+
+public struct MovementSummary: Codable {
+	public var unitid = 0
+	public var moves = 0
+}
+
+public struct ChatLogQuery: Codable {
+	public let last: Int64
+	public init(last l: Int64) {
+		last = l
+	}
+}
+
+public struct ProfileAPIRequest: Codable {
+	public var uid = ""
+}
+
+public struct RecipeAPIRequest: Codable {
+	public var uri = ""
+}
+
+public typealias RecipeAPIResponse = ProfileAPIResponse
 
 extension APIResponse where T: Decodable {
 	init(from: APIResponse<Data>) {
@@ -97,8 +285,8 @@ extension APIResponse where T: Decodable {
 }
 
 private func sendRequest<T>(endpoint: APIEndpoint,
-						 parameters: RequestParameters<T>,
-						 callback: @escaping (APIResponse<Data>) -> ()) {
+														parameters: RequestParameters<T>,
+														callback: @escaping (APIResponse<Data>) -> ()) {
 	let url = parameters.complete(url: endpoint.url)
 	guard let session = Authentication.shared?.token else {
 		return callback(APIResponse {throw Authentication.Error("No user token.")})
@@ -107,7 +295,7 @@ private func sendRequest<T>(endpoint: APIEndpoint,
 }
 
 private func sendRequest(endpoint: APIEndpoint,
-						 callback: @escaping (APIResponse<Data>) -> ()) {
+												 callback: @escaping (APIResponse<Data>) -> ()) {
 	sendRequest(endpoint: endpoint, parameters: RequestParameters(body: [String:String]()), callback: callback)
 }
 
@@ -182,19 +370,196 @@ public extension DeviceAPI {
 	/// Retrieve device observations of the indicated interval.
 	/// The response will be delivered to the provided callback.
 	static func deviceObservations(user: AuthenticatedUser,
-								   deviceId: DeviceURN,
-								   interval: DeviceAPI.ObsRequest.Interval, callback: @escaping (APIResponse<[ObsDatabase.BiqObservation]>) -> ()) {
+																 deviceId: DeviceURN,
+																 interval: DeviceAPI.ObsRequest.Interval, callback: @escaping (APIResponse<[ObsDatabase.BiqObservation]>) -> ()) {
 		let request = DeviceAPI.ObsRequest(deviceId: deviceId, interval: interval)
 		sendRequest(endpoint: .deviceObservations, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
+	/// Retrieve device summary of the indicated interval.
+	/// The response will be delivered to the provided callback.
+	static func deviceSummary(user: AuthenticatedUser,
+														deviceId: DeviceURN,
+														interval: DeviceAPI.ObsRequest.Interval, callback: @escaping (APIResponse<[MovementSummary]>) -> ()) {
+		let request = DeviceAPI.ObsRequest(deviceId: deviceId, interval: interval)
+		sendRequest(endpoint: .deviceSummary, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceProfileUpdate(user: AuthenticatedUser,
+																	profile: BiqProfile,
+																	callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceProfileUpdate, parameters: RequestParameters(body: profile)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceProfileGet(user: AuthenticatedUser, uid: String,
+															 callback: @escaping (APIResponse<BiqProfile>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .deviceProfileGet, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceLocation(user: AuthenticatedUser, location: BiqLocation,
+														 callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceLocation, parameters: RequestParameters(body: location)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceFollowers(user: AuthenticatedUser, deviceId: DeviceURN,
+															callback: @escaping (APIResponse<[String]>) -> ()) {
+		let req = RequestParameters<String>(rawString: deviceId)
+		sendRequest(endpoint: .deviceFollowers, parameters: req) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceTag(user: AuthenticatedUser, tag: String,
+												callback: @escaping (APIResponse<[BiqDevice]>) -> ()) {
+		struct SimpleRequest: Codable {
+			let with: String
+		}
+		let request = SimpleRequest.init(with: tag)
+		sendRequest(endpoint: .deviceTag, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceTagGet(user: AuthenticatedUser, uid: String,
+													 callback: @escaping (APIResponse<[BiqProfileTag]>) -> ()) {
+		let request = ProfileAPIRequest(uid: uid)
+		sendRequest(endpoint: .deviceTagGet, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceTagAdd(user: AuthenticatedUser, tags: [BiqProfileTag],
+													 callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceTagAdd, parameters: RequestParameters(body: tags)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceTagDel(user: AuthenticatedUser, tags: [BiqProfileTag],
+													 callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceTagDel, parameters: RequestParameters(body: tags)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceType(user: AuthenticatedUser, deviceId: DeviceURN, enableMovementFeature: Bool,
+												 callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		struct DeviceTypeSettings: Codable {
+			let id: String
+			let move: Int
+		}
+		let setting = DeviceTypeSettings.init(id: deviceId, move: enableMovementFeature ? 1 : 0)
+		sendRequest(endpoint: .deviceType, parameters: RequestParameters(body: setting)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func setBookmark(user: AuthenticatedUser, bookmark: BiqBookmark,
+													callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		sendRequest(endpoint: .deviceBookmark, parameters: RequestParameters(body: bookmark)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceFirmware(user: AuthenticatedUser,
+														 callback: @escaping (APIResponse<[BiqDeviceFirmware]>) -> ()) {
+		sendRequest(endpoint: .deviceFirmware) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func chatLoad(user: AuthenticatedUser,
+											 checkpoint: Int64,
+											 callback: @escaping (APIResponse<[ChatLog]>) -> ()) {
+		let request = ChatLogQuery.init(last: checkpoint)
+		sendRequest(endpoint: .chatLoad, parameters: RequestParameters(body: request)){
+			callback(APIResponse(from : $0))
+		}
+	}
+
+	static func chatSave(user: AuthenticatedUser,
+											 deviceId: DeviceURN,
+											 message: String,
+											 callback: @escaping (APIResponse<Int>) -> ()) {
+		let request = ChatLogCreation.init(topic: deviceId, content: message)
+		sendRequest(endpoint: .chatSave, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func profileUpload(user: AuthenticatedUser, payload: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIResponse.init(content: payload)
+		sendRequest(endpoint: .profileUpload, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func profileDownload(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .profileDownload, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func profileUpdateText(user: AuthenticatedUser, payload: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIResponse.init(content: payload)
+		sendRequest(endpoint: .profileUpdateText, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func profileGetText(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .profileGetText, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func profileGetFullName(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<ProfileAPIResponse>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .profileGetFullName, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func profileValidateBill(user: AuthenticatedUser, receipt: Data, callback: @escaping (APIResponse<[Receipt]>) -> ()) {
+		let postbody = receipt.base64EncodedString()
+		sendRequest(endpoint: .profileBill, parameters: RequestParameters<String>(rawString: postbody)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceStat(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<BiqStat>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .deviceStat, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func deviceSearch(user: AuthenticatedUser, uid: String, callback: @escaping (APIResponse<[BiqDevice]>) -> ()) {
+		let request = ProfileAPIRequest.init(uid: uid)
+		sendRequest(endpoint: .deviceSearch, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+
 	/// Delete all device observations.
 	/// This will fail if the current user is not the device's owner.
 	/// The response will be delivered to the provided callback.
 	static func deviceDeleteObservations(user: AuthenticatedUser,
-										 deviceId: DeviceURN,
-										 callback: @escaping (APIResponse<[EmptyReply]>) -> ()) {
+																			 deviceId: DeviceURN,
+																			 callback: @escaping (APIResponse<[EmptyReply]>) -> ()) {
 		let request = DeviceAPI.GenericDeviceRequest(deviceId: deviceId)
 		sendRequest(endpoint: .deviceDeleteObservations, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
@@ -214,6 +579,21 @@ public extension DeviceAPI {
 	static func setDeviceLimits(user: AuthenticatedUser, deviceId: DeviceURN, newLimits: [DeviceLimit], callback: @escaping (APIResponse<DeviceLimitsResponse>) -> ()) {
 		let request = DeviceAPI.UpdateLimitsRequest(deviceId: deviceId, limits: newLimits)
 		sendRequest(endpoint: .deviceSetLimits, parameters: RequestParameters(body: request)) {
+			callback(APIResponse(from: $0))
+		}
+	}
+
+	static func recipeSearch(user: AuthenticatedUser, keywords: String? = nil, page: Int, size: Int, callback: @escaping (APIResponse<[Recipe]>) -> ()) {
+		struct RecipeSearchRequest: Codable {
+			public let keywords: String?
+			public let page: Int
+			public let size: Int
+			public init(keywords kw: String? = nil, page pg: Int, size sz: Int) {
+				keywords = kw; page = pg >= 0 ? pg : 0; size = sz > 0 && sz <= 100 ? sz : 50
+			}
+		}
+		let request = RecipeSearchRequest(keywords: keywords, page: page, size: size)
+		sendRequest(endpoint: .recipeSearch, parameters: RequestParameters(body: request)) {
 			callback(APIResponse(from: $0))
 		}
 	}
@@ -277,4 +657,5 @@ public extension GroupAPI {
 		}
 	}
 }
+
 
