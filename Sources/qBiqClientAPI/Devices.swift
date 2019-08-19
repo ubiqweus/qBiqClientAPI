@@ -211,23 +211,31 @@ public struct Recipe: Codable, CustomStringConvertible {
 	public let tags: [String]?
 	public let comments: String?
 	public let payload: String?
+	public let active: Bool
 	public init(title t: String, company c: String,
 							createdAt cra: String, lastUpdate last: String, subtitle sub: String,
 							website web: String, companyWebsite cweb: String,
 							companyLogo clogo: String, logo mylogo: String,
 							description des: String, stars sta: Int,
 							tags tg:[String]? = nil, comments cmt: String? = nil,
-							payload paid: String? = nil) {
+							payload paid: String? = nil, active act: Bool = false) {
 		title = t; company = c; createdAt = cra; lastUpdate = last;
 		subtitle = sub; website = web; companyWebsite = cweb;
 		companyLogo = clogo; logo = mylogo; description = des;
-		stars = sta; tags = tg; comments = cmt; payload = paid
+		stars = sta; tags = tg; comments = cmt; payload = paid; active = act
 	}
 	public var configuration: RecipeConfiguration? {
 		guard let paid = payload else { return nil }
 		let bytes:[UInt8] = paid.utf8.map { $0 }
 		let data = Data(bytes: bytes)
-		return try? JSONDecoder().decode(RecipeConfiguration.self, from: data)
+		do {
+			let conf = try JSONDecoder().decode(RecipeConfiguration.self, from: data)
+			return conf
+		} catch (let err) {
+			NSLog("unable to decode recipe %@ configuration: %@", title, err.localizedDescription)
+			print(paid)
+		}
+		return nil
 	}
 }
 
